@@ -107,7 +107,7 @@ class Main:
                         return False;
                     visited[t.row][t.col] = True;
                     blocks.append(t); 
-        return False;
+        return True;
         #TODO in khat paeen okeye ?
         # return isSurrounded(player1, player2, 0 if des == 8 else 8);
 
@@ -116,7 +116,7 @@ class Main:
         if Main.hwalls[r1][c1 - 1] or Main.hwalls[r1][c1] or Main.hwalls[r1][c2] or Main.vwalls[r1][c1]:
             return False;
         Main.hwalls[r1][c1] = True;
-        if Main.isSurrounded(player1, player2, des):
+        if Main.isSurrounded(player1, player2, des) or Main.isSurrounded(player2, player1, 0 if des == 8 else 8):
             Main.hwalls[r1][c1] = False;
             return False;
         return True;
@@ -126,7 +126,7 @@ class Main:
         if Main.vwalls[r1 - 1][c1] or Main.vwalls[r1][c1] or Main.vwalls[r2][c1] or Main.hwalls[r1][c1]:
             return False;
         Main.vwalls[r1][c1] = True;
-        if Main.isSurrounded(player1, player2, des):
+        if Main.isSurrounded(player1, player2, des) or Main.isSurrounded(player2, player1, 0 if des == 8 else 8):
             Main.vwalls[r1][c1] = False;
             return False;
         return True;
