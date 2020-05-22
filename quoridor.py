@@ -17,28 +17,28 @@ class Board:
 		pygame.init()
 		pygame.display.set_caption('Quoridor')
 		pygame.font.init()
-		self.myfont = pygame.font.SysFont('Comic Sans MS', 50)
+		self.myfont = pygame.font.SysFont('Comic Sans MS', 35)
 		self.clock = pygame.time.Clock()
-		self.screen = pygame.display.set_mode((950, 950))
+		self.screen = pygame.display.set_mode((850, 790))
 		bg = pygame.image.load("bg.jpg").convert()
-		bg = pygame.transform.scale(bg, (950, 950))
+		bg = pygame.transform.scale(bg, (850, 790))
 		self.screen.blit(bg, (0, 0))
 		#player1
-		round_rect(self.screen, colors["red"], (360, 45, 155, 45))
-		round_rect(self.screen, colors["brawn"], (520, 45, 50, 45))
+		round_rect(self.screen, colors["red"], (360, 15, 155, 45))
+		round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
 		textsurface = self.myfont.render('Player1', False, colors["black"])
-		self.screen.blit(textsurface,(375,50))
+		self.screen.blit(textsurface,(375,10))
 		textsurface = self.myfont.render('10', False, colors["white"])
-		self.screen.blit(textsurface,(525,50))
+		self.screen.blit(textsurface,(525,10))
 		#player2
-		round_rect(self.screen, colors["green"], (360, 870, 155, 45))
-		round_rect(self.screen, colors["brawn"], (520, 870, 50, 45))
+		round_rect(self.screen, colors["green"], (360, 730, 155, 45))
+		round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
 		textsurface = self.myfont.render('Player2', False, colors["black"])
-		self.screen.blit(textsurface,(375,875))
+		self.screen.blit(textsurface,(375,725))
 		textsurface = self.myfont.render('10', False, colors["white"])
-		self.screen.blit(textsurface,(525,875))
+		self.screen.blit(textsurface,(525,725))
 
-		pygame.draw.rect(self.screen, colors["gray"], (125, 125, 700, 700))
+		pygame.draw.rect(self.screen, colors["gray"], (100, 70, 650, 650))
 
 		if numOfPlayer == 2:
 			p1 = pygame.draw.circle(self.screen, colors["red"], self.circle_position(0, 4), 25)
@@ -56,34 +56,34 @@ class Board:
 			player3 = Player(Position(4, 8), colors["yellow"], p3, 5)
 			player4 = Player(Position(4, 0), colors["aqua"], p4, 5)
 			self.players = [player1, player2, player3, player4]
-		x = 195
-		y = 195
+		x = 165
+		y = 135
 		for i in range(8):
-			pygame.draw.rect(self.screen, colors["white"], (x, 125, 8.75, 700), 1)
-			pygame.draw.rect(self.screen, colors["white"], (125, y, 700, 8.75), 1)
-			x += 78.75
-			y += 78.75
+			pygame.draw.rect(self.screen, colors["white"], (x, 70, 8, 650), 1)
+			pygame.draw.rect(self.screen, colors["white"], (100, y, 650, 8), 1)
+			x += 73
+			y += 73
 		pygame.display.update()
 
 	def circle_position(self, x, y):
-		px = (int)(125 + (x) * (78.75) + 35)
-		py = (int)(125 + (y) * (78.75) + 35)
+		px = (int)(70 + (x) * (73) + 32)
+		py = (int)(100 + (y) * (73) + 32)
 		return tuple([py, px])
 
 	def rect_position(self, x, y):
-		px = 125 + x * 78.75
-		py = 125 + y * 78.75
-		return py, px, 70, 70
+		px = 70 + x * 73
+		py = 100 + y * 73
+		return py, px, 65, 65
 
 	def vwall_position(self, x, y):
-		px = 195 + x * 78.75
-		py = 125 + y * 78.75
-		return px, py, 8.75, 148.75
+		px = 165 + x * 73
+		py = 70 + y * 73
+		return px, py, 8, 138
 
 	def hwall_position(self, x, y):
-		px = 125 + x * 78.75
-		py = 195 + y * 78.75
-		return px, py, 148.75, 8.75
+		px = 100 + x * 73
+		py = 135 + y * 73
+		return px, py, 138, 8
 
 	def handleClick(self):
 		if self.players[0].obj.collidepoint(pygame.mouse.get_pos()):
@@ -136,34 +136,34 @@ class Board:
 	def decreaseWalls(self, player):
 		player.walls -= 1
 		if player == self.players[0]:
-			round_rect(self.screen, colors["brawn"], (520, 45, 50, 45))
+			round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
 			textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-			self.screen.blit(textsurface,(525,50))
+			self.screen.blit(textsurface,(535,10))
 		else:
-			round_rect(self.screen, colors["brawn"], (520, 870, 50, 45))
+			round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
 			textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-			self.screen.blit(textsurface,(525,875))
+			self.screen.blit(textsurface,(535,725))
 
 
 	def checkVwalls(self):
 		mx, my = pygame.mouse.get_pos()
 		for i in range(8):
-			x = 195 + i * 78.75
-			if x <= mx <= x+8.75:
+			x = 165 + i * 73
+			if x <= mx <= x+8:
 				for j in range(9):
-					y = 125 + j * 78.75
-					if y <= my <= y + 70:
+					y = 70 + j * 73
+					if y <= my <= y + 65:
 						return i, j
 		return -1, -1
 
 	def checkHwalls(self):
 		mx, my = pygame.mouse.get_pos()
 		for i in range(9):
-			x = 125 + i * 78.75
-			if x <= mx <= x + 70:
+			x = 100 + i * 73
+			if x <= mx <= x + 65:
 				for j in range(8):
-					y = 195 + j * 78.75
-					if y <= my <= y + 8.75:
+					y = 135 + j * 73
+					if y <= my <= y + 8:
 						return i, j
 		return -1, -1
 
