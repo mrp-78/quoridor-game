@@ -61,7 +61,7 @@ class Board:
 			player2 = Player(Position(8, 4), p2, colors["green"], 5)
 			player3 = Player(Position(4, 8), p3, colors["yellow"], 5)
 			player4 = Player(Position(4, 0), p4, colors["aqua"], 5)
-			self.players = [player1, player2, player3, player4]
+			self.players = [player1, player3, player2, player4]
 		x = 165
 		y = 135
 		for i in range(8):
@@ -137,11 +137,11 @@ class Board:
 							if self.turn == 0 and (pm.row == 8 or pm.col == 0 or pm.col == 8):
 								self.winner = 0
 								self.printWinner()
-							elif self.turn == 1 and (pm.row == 0 or pm.col == 0 or pm.col == 8):
-								self.winner = 1
-								self.printWinner()
-							elif self.turn == 2 and (pm.row == 0 or pm.row == 8 or pm.col == 0):
+							elif self.turn == 2 and (pm.row == 0 or pm.col == 0 or pm.col == 8):
 								self.winner = 2
+								self.printWinner()
+							elif self.turn == 1 and (pm.row == 0 or pm.row == 8 or pm.col == 0):
+								self.winner = 1
 								self.printWinner()
 							elif self.turn == 3 and (pm.row == 0 or pm.row == 8 or pm.col == 8):
 								self.winner = 3
@@ -160,7 +160,6 @@ class Board:
 								self.decreaseWalls(self.players[self.turn])
 								self.changeTurn()
 						else:
-							
 							if self.logic.addVwall(vx, vx+1, vy, vy+1, self.players):
 								pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
 								self.decreaseWalls(self.players[self.turn])

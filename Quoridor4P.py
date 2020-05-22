@@ -38,7 +38,7 @@ class Main4:
             if (player2.pos.row == player1.pos.row + 1 and player2.pos.col == player1.pos.col) or (player3.pos.row == player1.pos.row + 1 and player3.pos.col == player1.pos.col) or (player4.pos.row == player1.pos.row + 1 and player4.pos.col == player1.pos.col):
                 if player1.pos.row == 7 or self.isHwall(player1.pos.row + 1, player1.pos.col) or (player3.pos.row == player1.pos.row + 2 and player3.pos.col == player1.pos.col) or (player4.pos.row == player1.pos.row + 2 and player4.pos.col == player1.pos.col) or (player2.pos.row == player1.pos.row + 2 and player2.pos.col == player1.pos.col):
                     if not(player1.pos.col == 0 or self.isVwall(player1.pos.row + 1, player1.pos.col - 1)):
-                        pm.append(Position(player1.pos.row + 1, player1.poscol - 1));
+                        pm.append(Position(player1.pos.row + 1, player1.pos.col - 1));
                     if not(player1.pos.col == 8 or self.isVwall(player1.pos.row + 1, player1.pos.col)):
                         pm.append(Position(player1.pos.row + 1, player1.pos.col + 1));
                 else:
@@ -105,7 +105,7 @@ class Main4:
         return True;    
 
     def addHwall(self, c1, c2, r1, r2, players):
-        player1, player3, player2, player4 = players
+        player1, player2, player3, player4 = players
         print(player1.color)
         if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c2] or self.vwalls[r1][c1]:
             return False;
@@ -116,7 +116,7 @@ class Main4:
         return True;
 
     def addVwall(self, c1, c2, r1, r2, players):
-        player1, player3, player2, player4 = players
+        player1, player2, player3, player4 = players
         print(player1.color)
         if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r2][c1] or self.hwalls[r1][c1]:
             return False;
