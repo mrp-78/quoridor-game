@@ -23,26 +23,13 @@ class Board:
 		pygame.init()
 		pygame.display.set_caption('Quoridor')
 		pygame.font.init()
-		self.myfont = pygame.font.SysFont('Comic Sans MS', 35)
+		self.myfont = pygame.font.SysFont('Comic Sans MS', 30)
 		self.clock = pygame.time.Clock()
 		self.screen = pygame.display.set_mode((850, 790))
 		bg = pygame.image.load("bg.jpg").convert()
 		bg = pygame.transform.scale(bg, (850, 790))
 		self.screen.blit(bg, (0, 0))
-		#player1
-		round_rect(self.screen, colors["red"], (360, 15, 155, 45))
-		round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
-		textsurface = self.myfont.render('Player1', False, colors["black"])
-		self.screen.blit(textsurface,(375,10))
-		textsurface = self.myfont.render('10', False, colors["white"])
-		self.screen.blit(textsurface,(525,10))
-		#player2
-		round_rect(self.screen, colors["green"], (360, 730, 155, 45))
-		round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
-		textsurface = self.myfont.render('Player2', False, colors["black"])
-		self.screen.blit(textsurface,(375,725))
-		textsurface = self.myfont.render('10', False, colors["white"])
-		self.screen.blit(textsurface,(525,725))
+		
 
 		pygame.draw.rect(self.screen, colors["gray"], (100, 70, 650, 650))
 
@@ -52,6 +39,20 @@ class Board:
 			player1 = Player(Position(0, 4), p1, colors["red"])
 			player2 = Player(Position(8, 4), p2, colors["green"])
 			self.players = [player1, player2]
+			#player1
+			round_rect(self.screen, colors["red"], (360, 15, 155, 45))
+			round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
+			textsurface = self.myfont.render('Player1', False, colors["black"])
+			self.screen.blit(textsurface,(375,10))
+			textsurface = self.myfont.render('10', False, colors["white"])
+			self.screen.blit(textsurface,(525,10))
+			#player2
+			round_rect(self.screen, colors["green"], (360, 730, 155, 45))
+			round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
+			textsurface = self.myfont.render('Player2', False, colors["black"])
+			self.screen.blit(textsurface,(375,725))
+			textsurface = self.myfont.render('10', False, colors["white"])
+			self.screen.blit(textsurface,(525,725))
 		if numOfPlayer == 4:
 			p1 = pygame.draw.circle(self.screen, colors["red"], self.circle_position(0, 4), 25)
 			p2 = pygame.draw.circle(self.screen, colors["green"], self.circle_position(8, 4), 25)
@@ -62,6 +63,34 @@ class Board:
 			player3 = Player(Position(4, 8), p3, colors["yellow"], 5)
 			player4 = Player(Position(4, 0), p4, colors["aqua"], 5)
 			self.players = [player1, player3, player2, player4]
+			#player1
+			round_rect(self.screen, colors["red"], (360, 15, 155, 45))
+			round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
+			textsurface = self.myfont.render('Player1', False, colors["black"])
+			self.screen.blit(textsurface,(375,10))
+			textsurface = self.myfont.render('5', False, colors["white"])
+			self.screen.blit(textsurface,(525,10))
+			#player2
+			round_rect(self.screen, colors["yellow"], (750, 350, 155, 45))
+			round_rect(self.screen, colors["brawn"], (780, 400, 50, 45))
+			textsurface = self.myfont.render('Player2', False, colors["black"])
+			self.screen.blit(textsurface,(750,345))
+			textsurface = self.myfont.render('5', False, colors["white"])
+			self.screen.blit(textsurface,(790,405))
+			#player3
+			round_rect(self.screen, colors["green"], (360, 730, 155, 45))
+			round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
+			textsurface = self.myfont.render('Player3', False, colors["black"])
+			self.screen.blit(textsurface,(375,725))
+			textsurface = self.myfont.render('5', False, colors["white"])
+			self.screen.blit(textsurface,(525,725))
+			#player4
+			round_rect(self.screen, colors["aqua"], (0, 350, 100, 45))
+			round_rect(self.screen, colors["brawn"], (15, 400, 50, 45))
+			textsurface = self.myfont.render('Player3', False, colors["black"])
+			self.screen.blit(textsurface,(0,345))
+			textsurface = self.myfont.render('5', False, colors["white"])
+			self.screen.blit(textsurface,(20,405))
 		x = 165
 		y = 135
 		for i in range(8):
@@ -102,6 +131,8 @@ class Board:
 						self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1])
 					else:
 						self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1], self.players[2], self.players[3])
+					if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
+						changeTurn()
 					self.drawPossibleMoves()
 			elif self.players[1].obj.collidepoint(pygame.mouse.get_pos()):
 				if self.turn == 1:
@@ -109,14 +140,20 @@ class Board:
 						self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0])
 					else:
 						self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0], self.players[2], self.players[3])
+					if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
+						changeTurn()
 					self.drawPossibleMoves()
 			elif self.numOfPlayer == 4 and self.players[2].obj.collidepoint(pygame.mouse.get_pos()):
 				if self.turn == 2:
 					self.possibleMove = self.logic.possibleMoves(self.players[2], self.players[1], self.players[0], self.players[3])
+					if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
+						changeTurn()
 					self.drawPossibleMoves()
 			elif self.numOfPlayer == 4 and self.players[3].obj.collidepoint(pygame.mouse.get_pos()):
 				if self.turn == 3:
 					self.possibleMove = self.logic.possibleMoves(self.players[3], self.players[1], self.players[0], self.players[2])
+					if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
+						changeTurn()
 					self.drawPossibleMoves()
 			else:
 				for pm in self.possibleMove:
@@ -186,7 +223,7 @@ class Board:
 		pygame.draw.rect(self.screen, self.players[self.winner].color, (0, 305, 850, 50))
 		textsurface = self.myfont.render('You win the game', False, colors["black"])
 		self.screen.blit(textsurface,(315,300))
-		self.tryAgein = pygame.draw.rect(self.screen, colors["black"], (350, 420, 150, 45))
+		self.tryAgein = pygame.draw.rect(self.screen, colors["black"], (350, 420, 200, 45))
 		textsurface = self.myfont.render('Play again', False, colors["white"])
 		self.screen.blit(textsurface,(365, 415))
 
@@ -194,19 +231,36 @@ class Board:
 		self.turn = (self.turn + 1) % self.numOfPlayer
 		round_rect(self.screen, self.players[self.turn].color, (0, 0, 75, 35))
 		textsurface = self.myfont.render('turn', False, colors["black"])
-		self.screen.blit(textsurface,(15, 0))
+		self.screen.blit(textsurface,(5, -10))
 
 	def decreaseWalls(self, player):
 		player.walls -= 1
-		if player == self.players[0]:
-			round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
-			textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-			self.screen.blit(textsurface,(535,10))
+		if self.numOfPlayer == 2:
+			if player == self.players[0]:
+				round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(535,10))
+			else:
+				round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(535,725))
 		else:
-			round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
-			textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-			self.screen.blit(textsurface,(535,725))
-
+			if player == self.players[0]:
+				round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(535,10))
+			elif player == self.players[2]:
+				round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(535,725))
+			elif player == self.players[1]:
+				round_rect(self.screen, colors["brawn"], (780, 400, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(790,405))
+			elif player == self.players[3]:
+				round_rect(self.screen, colors["brawn"], (15, 400, 50, 45))
+				textsurface = self.myfont.render(str(player.walls), False, colors["white"])
+				self.screen.blit(textsurface,(20,405))
 
 	def checkVwalls(self):
 		mx, my = pygame.mouse.get_pos()
