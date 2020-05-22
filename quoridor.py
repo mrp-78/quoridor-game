@@ -12,6 +12,8 @@ class Board:
 		self.numOfPlayer = numOfPlayer
 		self.turn = 0
 		self.possibleMove = []
+		if numOfPlayer == 2:
+			self.logic = Main()
 		pygame.init()
 		pygame.display.set_caption('Quoridor')
 		pygame.font.init()
@@ -86,11 +88,11 @@ class Board:
 	def handleClick(self):
 		if self.players[0].obj.collidepoint(pygame.mouse.get_pos()):
 			if self.turn == 0:
-				self.possibleMove = Main.possibleMoves(self.players[0], self.players[1])
+				self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1])
 				self.drawPossibleMoves()
 		elif self.players[1].obj.collidepoint(pygame.mouse.get_pos()):
 			if self.turn == 1:
-				self.possibleMove = Main.possibleMoves(self.players[1], self.players[0])
+				self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0])
 				self.drawPossibleMoves()
 		else:
 			for pm in self.possibleMove:
@@ -110,7 +112,7 @@ class Board:
 				if vx != -1 and self.players[self.turn].walls > 0:
 					if vy == 8:
 						vy -= 1
-					if Main.addVwall(vx, vx+1, vy, vy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
+					if self.logic.addVwall(vx, vx+1, vy, vy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
 						pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
 						self.decreaseWalls(self.players[self.turn])
 						if self.turn == 0:
@@ -122,7 +124,7 @@ class Board:
 					if hx != -1 and self.players[self.turn].walls > 0:
 						if hx == 8:
 							hx -= 1
-						if Main.addHwall(hx, hx+1, hy, hy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
+						if self.logic.addHwall(hx, hx+1, hy, hy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
 							pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(hx, hy))
 							self.decreaseWalls(self.players[self.turn])
 							if self.turn == 0:
