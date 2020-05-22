@@ -1,18 +1,5 @@
-class Position:
-    def __init__(self, row, col, obj = None):
-        self.row = row;
-        self.col = col;
-        self.obj = obj;
-    def __eq__(self, other):
-        return self.row == other.row and self.col == other.col;
-
-class Player:
-    def __init__(self, pos, obj = None, color = None, walls = 10):
-        self.pos = pos;
-        self.obj = obj;
-        self.walls = walls;
-        self.color = color;
-
+from position import *
+from player import *
 class Main:
 
     # horizontal walls

@@ -1,15 +1,5 @@
-class Position:
-        def __init__(self, row, col, obj = None):
-            self.row = row;
-            self.col = col;
-            self.obj = obj;
-
-class Player:
-    def __init__(self, pos, obj = None, color = None, walls = 10):
-        self.pos = pos;
-        self.obj = obj;
-        self.walls = walls;
-        self.color = color;
+from position import *
+from player import *
 
 class Main:
 
@@ -50,7 +40,7 @@ class Main:
             if player2.pos.row == player1.pos.row + 1 and player2.pos.col == player1.pos.col:
                 if (player1.pos.row == 7 or Main.isHwall(player1.pos.row + 1, player1.pos.col)):
                     if not(player1.pos.col == 0 or Main.isVwall(player1.pos.row + 1, player1.pos.col - 1)):
-                        pm.append(Position(player1.pos.row + 1, player1.poscol - 1));
+                        pm.append(Position(player1.pos.row + 1, player1.pos.col - 1));
                     if not(player1.pos.col == 8 or Main.isVwall(player1.pos.row + 1, player1.pos.col)):
                         pm.append(Position(player1.pos.row + 1, player1.pos.col + 1));
                 else:
