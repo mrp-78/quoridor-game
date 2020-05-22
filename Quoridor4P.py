@@ -106,7 +106,7 @@ class Main4:
 
     def addHwall(self, c1, c2, r1, r2, players):
         player1, player2, player3, player4 = players
-        print(player1.color)
+        #print(player1.color)
         if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c2] or self.vwalls[r1][c1]:
             return False;
         self.hwalls[r1][c1] = True;
@@ -117,7 +117,7 @@ class Main4:
 
     def addVwall(self, c1, c2, r1, r2, players):
         player1, player2, player3, player4 = players
-        print(player1.color)
+        #print(player1.color)
         if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r2][c1] or self.hwalls[r1][c1]:
             return False;
         self.vwalls[r1][c1] = True;
