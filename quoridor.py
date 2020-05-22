@@ -179,6 +179,10 @@ class Board:
 
 	def play(self):
 		while True:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					exit()
 			if pygame.mouse.get_pressed()[0]:
 				self.handleClick()
 			pygame.display.update()
