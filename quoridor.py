@@ -1,16 +1,19 @@
 import pygame
+import random
 from Quoridor2P import *
 from roundRect import *
 from position import *
 from player import *
 
 
-colors = {"black": (0, 0, 0), "white": (234, 236, 238), "brawn": (102, 51, 0), "light-brawn": (255, 138, 101), "gray": (44, 62, 80), "light-gray": (128, 139, 150),  "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0), "yellow": (255, 255, 0), "aqua": (0, 255, 255)}
+colors = {"black": (0, 0, 0), "transparent-black": (255, 0, 0, 100), "white": (234, 236, 238), "brawn": (102, 51, 0), "light-brawn": (255, 138, 101), "gray": (44, 62, 80), "light-gray": (128, 139, 150),  "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0), "yellow": (255, 255, 0), "aqua": (0, 255, 255)}
 
 class Board:
 	def __init__(self, numOfPlayer):
+		self.winner = -1
+		self.tryAgein = None
 		self.numOfPlayer = numOfPlayer
-		self.turn = 0
+		self.turn = random.randint(0, numOfPlayer-1) 
 		self.possibleMove = []
 		if numOfPlayer == 2:
 			self.logic = Main()
@@ -63,6 +66,7 @@ class Board:
 			pygame.draw.rect(self.screen, colors["white"], (100, y, 650, 8), 1)
 			x += 73
 			y += 73
+		self.changeTurn()
 		pygame.display.update()
 
 	def circle_position(self, x, y):
@@ -86,52 +90,72 @@ class Board:
 		return px, py, 138, 8
 
 	def handleClick(self):
-		if self.players[0].obj.collidepoint(pygame.mouse.get_pos()):
-			if self.turn == 0:
-				self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1])
-				self.drawPossibleMoves()
-		elif self.players[1].obj.collidepoint(pygame.mouse.get_pos()):
-			if self.turn == 1:
-				self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0])
-				self.drawPossibleMoves()
-		else:
-			for pm in self.possibleMove:
-				if pm.obj.collidepoint(pygame.mouse.get_pos()):
-					pygame.draw.rect(self.screen, colors["gray"], self.rect_position(self.players[self.turn].pos.row, self.players[self.turn].pos.col))
-					self.deletePossibleMoves()
-					self.players[self.turn].obj = pygame.draw.circle(self.screen, self.players[self.turn].color, self.circle_position(pm.row, pm.col), 25)
-					self.players[self.turn].pos.row = pm.row
-					self.players[self.turn].pos.col = pm.col
-					if self.turn == 0:
-						self.turn = 1
-					else:
-						self.turn = 0
-					break;
+		if self.tryAgein != None and self.tryAgein.collidepoint(pygame.mouse.get_pos()):
+			self.__init__(self.numOfPlayer)
+		elif self.winner == -1:
+			if self.players[0].obj.collidepoint(pygame.mouse.get_pos()):
+				if self.turn == 0:
+					self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1])
+					self.drawPossibleMoves()
+			elif self.players[1].obj.collidepoint(pygame.mouse.get_pos()):
+				if self.turn == 1:
+					self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0])
+					self.drawPossibleMoves()
 			else:
-				vx, vy = self.checkVwalls()
-				if vx != -1 and self.players[self.turn].walls > 0:
-					if vy == 8:
-						vy -= 1
-					if self.logic.addVwall(vx, vx+1, vy, vy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
-						pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
-						self.decreaseWalls(self.players[self.turn])
-						if self.turn == 0:
-							self.turn = 1
-						else:
-							self.turn = 0
+				for pm in self.possibleMove:
+					if pm.obj.collidepoint(pygame.mouse.get_pos()):
+						pygame.draw.rect(self.screen, colors["gray"], self.rect_position(self.players[self.turn].pos.row, self.players[self.turn].pos.col))
+						self.deletePossibleMoves()
+						self.players[self.turn].obj = pygame.draw.circle(self.screen, self.players[self.turn].color, self.circle_position(pm.row, pm.col), 25)
+						self.players[self.turn].pos.row = pm.row
+						self.players[self.turn].pos.col = pm.col
+						if self.numOfPlayer == 2:
+							if self.turn == 0 and pm.row == 8:
+								self.winner = 0
+								self.printWinner()
+							elif self.turn == 1 and pm.row == 0:
+								self.winner = 1
+								self.printWinner()
+						self.changeTurn()
+						break;
 				else:
-					hx, hy = self.checkHwalls()
-					if hx != -1 and self.players[self.turn].walls > 0:
-						if hx == 8:
-							hx -= 1
-						if self.logic.addHwall(hx, hx+1, hy, hy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
-							pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(hx, hy))
+					vx, vy = self.checkVwalls()
+					if vx != -1 and self.players[self.turn].walls > 0:
+						if vy == 8:
+							vy -= 1
+						if self.logic.addVwall(vx, vx+1, vy, vy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
+							pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
 							self.decreaseWalls(self.players[self.turn])
-							if self.turn == 0:
-								self.turn = 1
-							else:
-								self.turn = 0
-				self.deletePossibleMoves()
+							self.changeTurn()
+							
+					else:
+						hx, hy = self.checkHwalls()
+						if hx != -1 and self.players[self.turn].walls > 0:
+							if hx == 8:
+								hx -= 1
+							if self.logic.addHwall(hx, hx+1, hy, hy+1, self.players[self.turn], self.players[0 if self.turn == 1 else 1], 8 if self.turn == 0 else 0):
+								pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(hx, hy))
+								self.decreaseWalls(self.players[self.turn])
+								self.changeTurn()
+					self.deletePossibleMoves()
+
+	def printWinner(self):
+		pygame.draw.rect(self.screen, self.players[self.winner].color, (0, 305, 850, 50))
+		textsurface = self.myfont.render('You win the game', False, colors["black"])
+		self.screen.blit(textsurface,(315,300))
+		self.tryAgein = pygame.draw.rect(self.screen, colors["black"], (350, 420, 150, 45))
+		textsurface = self.myfont.render('Play again', False, colors["white"])
+		self.screen.blit(textsurface,(365, 415))
+
+	def changeTurn(self):
+		if self.numOfPlayer == 2:
+			if self.turn == 0:
+				self.turn = 1
+			else:
+				self.turn = 0
+		round_rect(self.screen, self.players[self.turn].color, (0, 0, 75, 35))
+		textsurface = self.myfont.render('turn', False, colors["black"])
+		self.screen.blit(textsurface,(15, 0))
 
 	def decreaseWalls(self, player):
 		player.walls -= 1
@@ -188,6 +212,7 @@ class Board:
 			pygame.display.update()
 			pygame.event.pump()
 			self.clock.tick(60)
+			# self.printWinner()
 
 
 board = Board(2)

@@ -3,10 +3,11 @@ from player import *
 
 class Main:
 
-    # horizontal walls
-    hwalls = [[False for i in range(9)] for j in range(8)];
-    # vertical walls
-    vwalls = [[False for i in range(8)] for j in range(9)];
+    def __init__(self):
+        # horizontal walls
+        self.hwalls = [[False for i in range(9)] for j in range(8)];
+        # vertical walls
+        self.vwalls = [[False for i in range(8)] for j in range(9)];
 
     def isHwall(self, r, c):
         return (self.hwalls[r][c] or self.hwalls[r][c - 1]);
