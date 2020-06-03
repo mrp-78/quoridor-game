@@ -318,7 +318,3 @@ class Board:
             pygame.display.update()
             pygame.event.pump()
             self.clock.tick(60)
-
-
-board = Board(int(input("Please enter number of players: ")))
-board.play()
