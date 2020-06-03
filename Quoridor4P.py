@@ -125,34 +125,29 @@ class Main4:
                     blocks.append(t)
         return True
 
-    def addHwall(self, c1, c2, r1, r2, players):
+    def addHwall(self, c1, r1, players):
         player1, player2, player3, player4 = players
-        # print(player1.color)
-        if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c2] or self.vwalls[r1][c1]:
+        if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c1 + 1] or self.vwalls[r1][c1]:
             return False
         self.hwalls[r1][c1] = True
-        if self.isSurrounded(player1, player2, player3, player4, [8], [0, 8]) or self.isSurrounded(player2, player1,
-                                                                                                   player3, player4,
-                                                                                                   [0, 8], [
-                                                                                                       0]) or self.isSurrounded(
-                player3, player2, player1, player4, [0], [0, 8]) or self.isSurrounded(player4, player2, player3,
-                                                                                      player1, [0, 8], [8]):
+        if self.isSurrounded(player1, player2, player3, player4, [8], [0, 8]) \
+                or self.isSurrounded(player2, player1, player3, player4, [0, 8], [0]) \
+                or self.isSurrounded(player3, player2, player1, player4, [0], [0, 8]) \
+                or self.isSurrounded(player4, player2, player3, player1, [0, 8], [8]):
             self.hwalls[r1][c1] = False
             return False
         return True
 
-    def addVwall(self, c1, c2, r1, r2, players):
+    def addVwall(self, c1, r1, players):
         player1, player2, player3, player4 = players
         # print(player1.color)
-        if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r2][c1] or self.hwalls[r1][c1]:
+        if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r1 + 1][c1] or self.hwalls[r1][c1]:
             return False
         self.vwalls[r1][c1] = True
-        if self.isSurrounded(player1, player2, player3, player4, [8], [0, 8]) or self.isSurrounded(player2, player1,
-                                                                                                   player3, player4,
-                                                                                                   [0, 8], [
-                                                                                                       0]) or self.isSurrounded(
-                player3, player2, player1, player4, [0], [0, 8]) or self.isSurrounded(player4, player2, player3,
-                                                                                      player1, [0, 8], [8]):
+        if self.isSurrounded(player1, player2, player3, player4, [8], [0, 8]) \
+                or self.isSurrounded(player2, player1, player3, player4, [0, 8], [0]) \
+                or self.isSurrounded(player3, player2, player1, player4, [0], [0, 8]) \
+                or self.isSurrounded(player4, player2, player3, player1, [0, 8], [8]):
             self.vwalls[r1][c1] = False
             return False
         return True

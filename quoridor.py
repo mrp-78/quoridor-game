@@ -22,6 +22,7 @@ class Board:
         self.possibleMove = []
         if numOfPlayer == 2:
             self.logic = Main()
+            self.ai = AI2P(self.logic, 8)
         else:
             self.logic = Main4()
         pygame.init()
@@ -138,7 +139,7 @@ class Board:
                         self.possibleMove = self.logic.possibleMoves(self.players[0], self.players[1], self.players[2],
                                                                      self.players[3])
                     if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
-                        changeTurn()
+                        self.changeTurn()
                     self.drawPossibleMoves()
             elif self.players[1].obj.collidepoint(pygame.mouse.get_pos()):
                 if self.turn == 1:
@@ -148,21 +149,21 @@ class Board:
                         self.possibleMove = self.logic.possibleMoves(self.players[1], self.players[0], self.players[2],
                                                                      self.players[3])
                     if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
-                        changeTurn()
+                        self.changeTurn()
                     self.drawPossibleMoves()
             elif self.numOfPlayer == 4 and self.players[2].obj.collidepoint(pygame.mouse.get_pos()):
                 if self.turn == 2:
                     self.possibleMove = self.logic.possibleMoves(self.players[2], self.players[1], self.players[0],
                                                                  self.players[3])
                     if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
-                        changeTurn()
+                        self.changeTurn()
                     self.drawPossibleMoves()
             elif self.numOfPlayer == 4 and self.players[3].obj.collidepoint(pygame.mouse.get_pos()):
                 if self.turn == 3:
                     self.possibleMove = self.logic.possibleMoves(self.players[3], self.players[1], self.players[0],
                                                                  self.players[2])
                     if len(self.possibleMove) == 0 and self.players[self.turn].walls == 0:
-                        changeTurn()
+                        self.changeTurn()
                     self.drawPossibleMoves()
             else:
                 for pm in self.possibleMove:
@@ -204,14 +205,14 @@ class Board:
                         if vy == 8:
                             vy -= 1
                         if self.numOfPlayer == 2:
-                            if self.logic.addVwall(vx, vx + 1, vy, vy + 1, self.players[self.turn],
+                            if self.logic.addVwall(vx, vy, self.players[self.turn],
                                                    self.players[0 if self.turn == 1 else 1],
                                                    8 if self.turn == 0 else 0):
                                 pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
                                 self.decreaseWalls(self.players[self.turn])
                                 self.changeTurn()
                         else:
-                            if self.logic.addVwall(vx, vx + 1, vy, vy + 1, self.players):
+                            if self.logic.addVwall(vx, vy, self.players):
                                 pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(vx, vy))
                                 self.decreaseWalls(self.players[self.turn])
                                 self.changeTurn()
@@ -221,7 +222,7 @@ class Board:
                             if hx == 8:
                                 hx -= 1
                             if self.numOfPlayer == 2:
-                                if self.logic.addHwall(hx, hx + 1, hy, hy + 1, self.players[self.turn],
+                                if self.logic.addHwall(hx, hy, self.players[self.turn],
                                                        self.players[0 if self.turn == 1 else 1],
                                                        8 if self.turn == 0 else 0):
                                     pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(hx, hy))
@@ -229,7 +230,7 @@ class Board:
                                     self.changeTurn()
                             else:
 
-                                if self.logic.addHwall(hx, hx + 1, hy, hy + 1, self.players):
+                                if self.logic.addHwall(hx, hy, self.players):
                                     pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(hx, hy))
                                     self.decreaseWalls(self.players[self.turn])
                                     self.changeTurn()
@@ -316,7 +317,9 @@ class Board:
                     pygame.quit()
                     exit()
             if pygame.mouse.get_pressed()[0]:
-                # print(shortestPath(self.logic, self.players[0], self.players[1], 8))
+                # print(self.ai.shortestPath(self.players[0], self.players[1]))
+                # print(self.ai.countNearWalls(self.players[0], self.players[1]))
+                print(self.ai.chooseAnAction(self.players[0], self.players[1]))
                 self.handleClick()
             pygame.display.update()
             pygame.event.pump()

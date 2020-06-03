@@ -11,9 +11,18 @@ class Main:
         self.vwalls = [[False for i in range(8)] for j in range(9)]
 
     def isHwall(self, r, c):
+        if r >= 8 or c < 0 or c > 8 or r < 0:
+            return False
+        if c == 0:
+            return self.hwalls[r][c]
         return self.hwalls[r][c] or self.hwalls[r][c - 1]
 
     def isVwall(self, r, c):
+        # print(r, c)
+        if c >= 8 or r < 0 or r > 8 or c < 0:
+            return False
+        if r == 0:
+            return self.vwalls[r][c]
         return self.vwalls[r][c] or self.vwalls[r - 1][c]
 
     def possibleMoves(self, player1, player2):
@@ -97,8 +106,8 @@ class Main:
                     blocks.append(t)
         return True
 
-    def addHwall(self, c1, c2, r1, r2, player2, player1, des):
-        if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c2] or self.vwalls[r1][c1]:
+    def addHwall(self, c1, r1, player2, player1, des):
+        if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c1+1] or self.vwalls[r1][c1]:
             return False
         self.hwalls[r1][c1] = True
         if self.isSurrounded(player1, player2, des) or self.isSurrounded(player2, player1, 0 if des == 8 else 8):
@@ -106,8 +115,8 @@ class Main:
             return False
         return True
 
-    def addVwall(self, c1, c2, r1, r2, player2, player1, des):
-        if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r2][c1] or self.hwalls[r1][c1]:
+    def addVwall(self, c1, r1, player2, player1, des):
+        if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r1+1][c1] or self.hwalls[r1][c1]:
             return False
         self.vwalls[r1][c1] = True
         if self.isSurrounded(player1, player2, des) or self.isSurrounded(player2, player1, 0 if des == 8 else 8):
