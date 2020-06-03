@@ -1,5 +1,6 @@
 import pygame
 import random
+import platform
 from Quoridor2P import *
 from Quoridor4P import *
 from roundRect import *
@@ -32,7 +33,9 @@ class Board:
         bg = pygame.image.load("bg.jpg").convert()
         bg = pygame.transform.scale(bg, (850, 790))
         self.screen.blit(bg, (0, 0))
-
+        self.diff = 0
+        if platform.system() == 'Linux':
+            self.diff = 10
         pygame.draw.rect(self.screen, colors["gray"], (100, 70, 650, 650))
 
         if numOfPlayer == 2:
@@ -45,16 +48,16 @@ class Board:
             round_rect(self.screen, colors["red"], (360, 15, 155, 45))
             round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
             text = self.myfont.render('Player1', False, colors["black"])
-            self.screen.blit(text, (375, 10))
+            self.screen.blit(text, (375 + self.diff, 10 + 1.5 * self.diff))
             text = self.myfont.render('10', False, colors["white"])
-            self.screen.blit(text, (525, 10))
+            self.screen.blit(text, (525 + self.diff, 10 + 1.5 * self.diff))
             # player2
             round_rect(self.screen, colors["green"], (360, 730, 155, 45))
             round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
             text = self.myfont.render('Player2', False, colors["black"])
-            self.screen.blit(text, (375, 725))
+            self.screen.blit(text, (375 + self.diff, 725 + 1.5 * self.diff))
             text = self.myfont.render('10', False, colors["white"])
-            self.screen.blit(text, (525, 725))
+            self.screen.blit(text, (525 + self.diff, 725 + 1.5 * self.diff))
         if numOfPlayer == 4:
             p1 = pygame.draw.circle(self.screen, colors["red"], self.circle_position(0, 4), 25)
             p2 = pygame.draw.circle(self.screen, colors["green"], self.circle_position(8, 4), 25)
@@ -69,30 +72,30 @@ class Board:
             round_rect(self.screen, colors["red"], (360, 15, 155, 45))
             round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
             text = self.myfont.render('Player1', False, colors["black"])
-            self.screen.blit(text, (375, 10))
+            self.screen.blit(text, (375 + self.diff, 10 + 1.5 * self.diff))
             text = self.myfont.render('5', False, colors["white"])
-            self.screen.blit(text, (525, 10))
+            self.screen.blit(text, (525 + self.diff, 10 + 1.5 * self.diff))
             # player2
             round_rect(self.screen, colors["yellow"], (750, 350, 155, 45))
             round_rect(self.screen, colors["brawn"], (780, 400, 50, 45))
             text = self.myfont.render('Player2', False, colors["black"])
-            self.screen.blit(text, (750, 345))
+            self.screen.blit(text, (750 + self.diff, 345 + 1.5 * self.diff))
             text = self.myfont.render('5', False, colors["white"])
-            self.screen.blit(text, (790, 405))
+            self.screen.blit(text, (790 + self.diff, 405 + self.diff))
             # player3
             round_rect(self.screen, colors["green"], (360, 730, 155, 45))
             round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
             text = self.myfont.render('Player3', False, colors["black"])
-            self.screen.blit(text, (375, 725))
+            self.screen.blit(text, (375 + self.diff, 725 + 1.5 * self.diff))
             text = self.myfont.render('5', False, colors["white"])
-            self.screen.blit(text, (525, 725))
+            self.screen.blit(text, (525 + self.diff, 725 + 1.5 * self.diff))
             # player4
             round_rect(self.screen, colors["aqua"], (0, 350, 100, 45))
             round_rect(self.screen, colors["brawn"], (15, 400, 50, 45))
             text = self.myfont.render('Player3', False, colors["black"])
-            self.screen.blit(text, (0, 345))
+            self.screen.blit(text, (0 + self.diff, 345 + 1.5 * self.diff))
             text = self.myfont.render('5', False, colors["white"])
-            self.screen.blit(text, (20, 405))
+            self.screen.blit(text, (20 + self.diff, 405 + self.diff))
         x = 165
         y = 135
         for i in range(8):
@@ -235,16 +238,16 @@ class Board:
     def printWinner(self):
         pygame.draw.rect(self.screen, self.players[self.winner].color, (0, 305, 850, 50))
         textsurface = self.myfont.render('You win the game', False, colors["black"])
-        self.screen.blit(textsurface, (315, 300))
+        self.screen.blit(textsurface, (315 + 1.5 * self.diff, 300 + 1.5 * self.diff))
         self.tryAgein = pygame.draw.rect(self.screen, colors["black"], (350, 420, 200, 45))
         textsurface = self.myfont.render('Play again', False, colors["white"])
-        self.screen.blit(textsurface, (365, 415))
+        self.screen.blit(textsurface, (365 + 1.5 * self.diff, 415 + 1.5 * self.diff))
 
     def changeTurn(self):
         self.turn = (self.turn + 1) % self.numOfPlayer
         round_rect(self.screen, self.players[self.turn].color, (0, 0, 75, 35))
         textsurface = self.myfont.render('turn', False, colors["black"])
-        self.screen.blit(textsurface, (5, -10))
+        self.screen.blit(textsurface, (5 + self.diff, -10 + 1.5 * self.diff))
 
     def decreaseWalls(self, player):
         player.walls -= 1
@@ -252,28 +255,28 @@ class Board:
             if player == self.players[0]:
                 round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (535, 10))
+                self.screen.blit(textsurface, (535, 10 + 1.5 * self.diff))
             else:
                 round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (535, 725))
+                self.screen.blit(textsurface, (535, 725 + 1.5 * self.diff))
         else:
             if player == self.players[0]:
                 round_rect(self.screen, colors["brawn"], (520, 15, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (535, 10))
+                self.screen.blit(textsurface, (535, 10 + 1.5 * self.diff))
             elif player == self.players[2]:
                 round_rect(self.screen, colors["brawn"], (520, 730, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (535, 725))
+                self.screen.blit(textsurface, (535, 725 + 1.5 * self.diff))
             elif player == self.players[1]:
                 round_rect(self.screen, colors["brawn"], (780, 400, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (790, 405))
+                self.screen.blit(textsurface, (790 + self.diff, 405 + self.diff))
             elif player == self.players[3]:
                 round_rect(self.screen, colors["brawn"], (15, 400, 50, 45))
                 textsurface = self.myfont.render(str(player.walls), False, colors["white"])
-                self.screen.blit(textsurface, (20, 405))
+                self.screen.blit(textsurface, (20 + self.diff, 405 + self.diff))
 
     def checkVwalls(self):
         mx, my = pygame.mouse.get_pos()

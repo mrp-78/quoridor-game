@@ -4,6 +4,11 @@ from player import *
 from position import *
 
 
+def heuristic(logic: Main, player1: Player, player2: Player, goal: int):
+    # TODO add more factors
+    return 2 * shortestPath(logic, player1, player2, goal) + (player1.walls / player2.walls)
+
+
 def shortestPath(logic: Main, player1: Player, player2: Player, goal: int):
     mark = [[False for i in range(9)] for j in range(9)]
     p1 = Player(Position(player1.pos.row, player1.pos.col))
@@ -21,7 +26,7 @@ def shortestPath(logic: Main, player1: Player, player2: Player, goal: int):
                 p3 = Player(Position(p.pos.row, p.pos.col))
                 p3.pos.row = pm.row
                 p3.pos.col = pm.col
-                q.append((p3, d+1))
+                q.append((p3, d + 1))
     return -1
 
 # logic = Main()
