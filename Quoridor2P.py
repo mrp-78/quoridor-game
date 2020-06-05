@@ -107,6 +107,8 @@ class Main:
         return True
 
     def addHwall(self, c1, r1, player2, player1, des):
+        if r1 < 0 or r1 > 7 or c1 < 0 or c1 > 7:
+            return False
         if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c1+1] or self.vwalls[r1][c1]:
             return False
         self.hwalls[r1][c1] = True
@@ -116,6 +118,8 @@ class Main:
         return True
 
     def addVwall(self, c1, r1, player2, player1, des):
+        if r1 < 0 or r1 > 7 or c1 < 0 or c1 > 7:
+            return False
         if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r1+1][c1] or self.hwalls[r1][c1]:
             return False
         self.vwalls[r1][c1] = True

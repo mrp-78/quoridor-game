@@ -22,7 +22,7 @@ class Board:
         self.possibleMove = []
         if numOfPlayer == 2:
             self.logic = Main()
-            self.ai = AI2P(self.logic, 8)
+            self.ai = AI2P(self.logic, 0)
         else:
             self.logic = Main4()
         pygame.init()
@@ -249,6 +249,8 @@ class Board:
         round_rect(self.screen, self.players[self.turn].color, (0, 0, 75, 35))
         textsurface = self.myfont.render('turn', False, colors["black"])
         self.screen.blit(textsurface, (5 + self.diff, -10 + 1.5 * self.diff))
+        if self.turn == 1:
+            print(self.ai.chooseAnAction(self.players[1], self.players[0]))
 
     def decreaseWalls(self, player):
         player.walls -= 1
@@ -319,7 +321,7 @@ class Board:
             if pygame.mouse.get_pressed()[0]:
                 # print(self.ai.shortestPath(self.players[0], self.players[1]))
                 # print(self.ai.countNearWalls(self.players[0], self.players[1]))
-                print(self.ai.chooseAnAction(self.players[0], self.players[1]))
+
                 self.handleClick()
             pygame.display.update()
             pygame.event.pump()
