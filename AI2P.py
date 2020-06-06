@@ -26,8 +26,8 @@ class AI2P:
                 r = pm.row
                 c = pm.col
                 action = "move"
-        for row in range(player2.pos.row-2, player2.pos.row+2):
-            for col in range(player2.pos.col-2, player2.pos.col+2):
+        for row in range(player2.pos.row - 2, player2.pos.row + 2):
+            for col in range(player2.pos.col - 2, player2.pos.col + 2):
                 if self.logic.addHwall(col, row, p1, p2, self.goal):
                     a = self.minimaxTree(p1, p2, 1, 0, 1)
                     print(a, "add Hwall", row, col)
@@ -38,7 +38,7 @@ class AI2P:
                         c = col
                         action = "add Hwall"
                     self.logic.hwalls[row][col] = False
-                if (row != 0 and row != 8) or  (self.logic.isVwall(2 if row == 0 else 6, col)):
+                if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)):
                     if self.logic.addVwall(col, row, p1, p2, self.goal):
                         a = self.minimaxTree(p1, p2, 1, 0, 1)
                         print(a, "add Vwall", row, col)
@@ -53,7 +53,7 @@ class AI2P:
 
     def minimaxTree(self, player1: Player, player2: Player, d, l, r):
         # TODO find the best depth for algorithm
-        if d == 3:
+        if d == 4:
             return self.heuristic(player1, player2)
         if player1.pos.row == self.goal:
             return 1
@@ -70,8 +70,8 @@ class AI2P:
                 if a <= l:
                     return alphaBeta
                 r = min(r, a)
-            for row in range(player1.pos.row-2, player1.pos.row+2):
-                for col in range(player1.pos.col-2, player1.pos.col+2):
+            for row in range(player1.pos.row - 1, player1.pos.row + 2):
+                for col in range(player1.pos.col - 2, player1.pos.col + 2):
                     if self.logic.addHwall(col, row, player1, player2, self.goal):
                         a = self.minimaxTree(player1, player2, d + 1, l, r)
                         alphaBeta = min(alphaBeta, a)
@@ -100,8 +100,8 @@ class AI2P:
                 if a >= r:
                     return alphaBeta
                 l = max(l, a)
-            for row in range(player2.pos.row-2, player2.pos.row+2):
-                for col in range(player2.pos.col-2, player2.pos.col+2):
+            for row in range(player2.pos.row - 1, player2.pos.row + 2):
+                for col in range(player2.pos.col - 2, player2.pos.col + 2):
                     if self.logic.addHwall(col, row, player1, player2, self.goal):
                         a = self.minimaxTree(player1, player2, d + 1, l, r)
                         alphaBeta = max(alphaBeta, a)
@@ -110,7 +110,7 @@ class AI2P:
                             return alphaBeta
                         l = max(l, a)
                         self.logic.hwalls[row][col] = False
-                    if (row != 0 and row != 8) or  (self.logic.isVwall(2 if row == 0 else 6, col)):
+                    if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)):
                         if self.logic.addVwall(col, row, player1, player2, self.goal):
                             a = self.minimaxTree(player1, player2, d + 1, l, r)
                             alphaBeta = max(alphaBeta, a)
@@ -128,10 +128,14 @@ class AI2P:
         g = 0 if self.goal == 8 else 8
         if player2.pos.row == g:
             return 0
-        return (0.4 * self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
-                / self.shortestPath(player1, player2, self.goal)) / 30 \
-               + 0.25 * (player1.walls / player2.walls) / 10 \
-               + 0.35 * self.countNearWalls(player1, player2) / 20
+        if player2.walls == 0:
+            return (0.6 * self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
+                    / self.shortestPath(player1, player2, self.goal)
+                    + 0.25 * (len(self.logic.possibleMoves(player1, player2))
+                              / len(self.logic.possibleMoves(player2, player1)))) / 60
+        return (0.8 * self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
+                / self.shortestPath(player1, player2, self.goal) + 0.1 * player1.walls / player2.walls
+                + 0.1 * len(self.logic.possibleMoves(player1, player2)) / len(self.logic.possibleMoves(player2, player1))) / 60
 
     def countNearWalls(self, player1: Player, player2: Player):
         w = 0
