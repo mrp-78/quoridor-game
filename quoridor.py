@@ -1,6 +1,7 @@
 import pygame
-import random
+# import random
 import platform
+import time
 from Quoridor2P import *
 from Quoridor4P import *
 from roundRect import *
@@ -18,7 +19,7 @@ class Board:
         self.winner = -1
         self.tryAgein = None
         self.numOfPlayer = numOfPlayer
-        self.turn = random.randint(0, numOfPlayer - 1)
+        self.turn = random.randint(0, numOfPlayer)
         self.possibleMove = []
         if numOfPlayer == 2:
             self.logic = Main()
@@ -250,7 +251,9 @@ class Board:
         textsurface = self.myfont.render('turn', False, colors["black"])
         self.screen.blit(textsurface, (5 + self.diff, -10 + 1.5 * self.diff))
         if self.turn == 1:
+            start = time.process_time()
             print(self.ai.chooseAnAction(self.players[1], self.players[0]))
+            print(time.process_time() - start)
 
     def decreaseWalls(self, player):
         player.walls -= 1
