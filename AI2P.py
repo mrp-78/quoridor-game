@@ -5,7 +5,6 @@ from player import *
 from position import *
 
 
-
 class AI2P:
     def __init__(self, logic: Main, goal: int):
         self.logic = logic
@@ -18,9 +17,21 @@ class AI2P:
         r = 0
         c = 0
         action = ""
-        for pm in self.logic.possibleMoves(p1, p2):
+        len = -1
+        sr = 0
+        sc = 0
+        for pm in self.logic.possibleMoves(player1, player2):
+            p = Player(Position(pm.row, pm.col), None, None, p1.walls)
+            l = self.shortestPath(p, p2, self.goal)
+            if len == -1 or l < len:
+                len = l
+                sr = pm.row
+                sc = pm.col
+        for pm in self.logic.possibleMoves(player1, player2):
             p = Player(Position(pm.row, pm.col), None, None, p1.walls)
             a = self.minimaxTree(p, p2, 1, 0, 70)
+            if pm.row == sr and pm.col == sc:
+                a += 0.5
             print(a, "move", pm.row, pm.col)
             # self.printWalls()
             if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5):
@@ -41,7 +52,8 @@ class AI2P:
                             c = col
                             action = "add Hwall"
                         self.logic.hwalls[row][col] = False
-                    if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)):
+                    if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)) \
+                            or (self.logic.isHwall(row, col)) or (self.logic.isHwall(row, col + 1)):
                         if self.logic.addVwall(col, row, p1, p2, self.goal):
                             a = self.minimaxTree(p1, p2, 1, 0, 70)
                             print(a, "add Vwall", row, col)
@@ -84,7 +96,8 @@ class AI2P:
                                 return alphaBeta
                             r = min(r, a)
                             self.logic.hwalls[row][col] = False
-                        if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)):
+                        if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)) \
+                                or (self.logic.isHwall(row, col)) or (self.logic.isHwall(row, col + 1)):
                             if self.logic.addVwall(col, row, player1, player2, self.goal):
                                 a = self.minimaxTree(player1, player2, d + 1, l, r)
                                 alphaBeta = min(alphaBeta, a)
@@ -93,8 +106,6 @@ class AI2P:
                                     return alphaBeta
                                 r = min(r, a)
                                 self.logic.vwalls[row][col] = False
-            else:
-                print("wall!!")
             return alphaBeta
         else:
             # max
@@ -117,7 +128,8 @@ class AI2P:
                                 return alphaBeta
                             l = max(l, a)
                             self.logic.hwalls[row][col] = False
-                        if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)):
+                        if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)) \
+                                or (self.logic.isHwall(row, col)) or (self.logic.isHwall(row, col + 1)):
                             if self.logic.addVwall(col, row, player1, player2, self.goal):
                                 a = self.minimaxTree(player1, player2, d + 1, l, r)
                                 alphaBeta = max(alphaBeta, a)
@@ -126,8 +138,6 @@ class AI2P:
                                     return alphaBeta
                                 l = max(l, a)
                                 self.logic.vwalls[row][col] = False
-            else:
-                print("wall!!")
             return alphaBeta
 
     def heuristic(self, player1: Player, player2: Player):
@@ -139,12 +149,11 @@ class AI2P:
             return 0
         if player2.walls == 0:
             return (0.75 * (self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
-                    - self.shortestPath(player1, player2, self.goal))
-                    + 0.08 * (len(self.logic.possibleMoves(player1, player2))
-                              - len(self.logic.possibleMoves(player2, player1)))) + 35
+                            - self.shortestPath(player1, player2, self.goal))
+                    + 0.08 * (self.countNearWalls(player2, player1) - self.countNearWalls(player1, player2))) + 35
         return (0.75 * (self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
-                - self.shortestPath(player1, player2, self.goal)) + 0.17 * (player1.walls - player2.walls)
-                + 0.08 * (len(self.logic.possibleMoves(player1, player2)) - len(self.logic.possibleMoves(player2, player1)))) + 35
+                        - self.shortestPath(player1, player2, self.goal)) + 0.17 * (player1.walls - player2.walls)
+                + 0.08 * (self.countNearWalls(player2, player1) - self.countNearWalls(player1, player2))) + 35
 
     def countNearWalls(self, player1: Player, player2: Player):
         w = 0
