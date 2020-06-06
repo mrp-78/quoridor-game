@@ -9,6 +9,8 @@ class AI2P:
     def __init__(self, logic: Main, goal: int):
         self.logic = logic
         self.goal = goal
+        self.prevRow = -1
+        self.prevCol = -1
 
     def chooseAnAction(self, player1: Player, player2: Player):
         p1 = Player(Position(player1.pos.row, player1.pos.col), None, None, player1.walls)
@@ -17,17 +19,22 @@ class AI2P:
         r = 0
         c = 0
         action = ""
-        len = -1
+        sp = -1
         sr = 0
         sc = 0
         for pm in self.logic.possibleMoves(player1, player2):
             p = Player(Position(pm.row, pm.col), None, None, p1.walls)
             l = self.shortestPath(p, p2, self.goal)
-            if len == -1 or l < len:
-                len = l
+            if sp == -1 or l < sp:
+                sp = l
                 sr = pm.row
                 sc = pm.col
+        check = False
+        if len(self.logic.possibleMoves(player1, player2)) > 1 and self.prevRow != -1:
+            check = True
         for pm in self.logic.possibleMoves(player1, player2):
+            if check and pm.row == self.prevRow and pm.col == self.prevCol:
+                continue
             p = Player(Position(pm.row, pm.col), None, None, p1.walls)
             a = self.minimaxTree(p, p2, 1, 0, 70)
             if pm.row == sr and pm.col == sc:
@@ -64,6 +71,12 @@ class AI2P:
                                 c = col
                                 action = "add Vwall"
                             self.logic.vwalls[row][col] = False
+        if action == "move":
+            self.prevRow = player1.pos.row
+            self.prevCol = player1.pos.col
+        else :
+            self.prevRow = -1
+            self.prevCol = -1
         return action, r, c
 
     def minimaxTree(self, player1: Player, player2: Player, d, l, r):
