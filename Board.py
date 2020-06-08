@@ -10,15 +10,15 @@ colors = {"black": (0, 0, 0), "white": (234, 236, 238), "brawn": (102, 51, 0), "
 
 
 class Board:
-    def __init__(self, numOfPlayer):
+    def __init__(self, numOfPlayer, numOfAi):
         self.winner = -1
         self.tryAgein = None
         self.numOfPlayer = numOfPlayer
+        self.numOfAi = numOfAi
         self.turn = random.randint(0, numOfPlayer)
         self.possibleMove = []
         if numOfPlayer == 2:
             self.logic = Logic2P()
-            self.numOfAi = int(input("Please enter number of bots (0 or 1 or 2): "))
             if self.numOfAi == 1:
                 self.ai = AI2P(self.logic, 0)
             elif self.numOfAi == 2:
@@ -131,7 +131,7 @@ class Board:
 
     def handleClick(self):
         if self.tryAgein != None and self.tryAgein.collidepoint(pygame.mouse.get_pos()):
-            self.__init__(self.numOfPlayer)
+            self.__init__(self.numOfPlayer, self.numOfAi)
         elif self.winner == -1:
             if self.players[0].obj.collidepoint(pygame.mouse.get_pos()):
                 if self.turn == 0:
@@ -319,7 +319,7 @@ class Board:
             action, row, col, tim = self.ai.chooseAnAction(self.players[self.turn], self.players[0 if self.turn == 1 else 1])
         elif self.numOfAi == 2:
             action, row, col, tim = self.ai[self.turn].chooseAnAction(self.players[self.turn], self.players[0 if self.turn == 1 else 1])
-        print(action, row, col)
+        # print(action, row, col)
         if action == "move":
             pygame.draw.rect(self.screen, colors["gray"],
                              self.rect_position(self.players[self.turn].pos.row,
@@ -331,6 +331,9 @@ class Board:
             self.players[self.turn].pos.col = col
             if self.turn == 1 and row == 0:
                 self.winner = 1
+                self.printWinner()
+            elif self.turn == 0 and row == 8:
+                self.winner = 0
                 self.printWinner()
         elif action == "add Vwall":
             if self.logic.addVwall(col, row, self.players[self.turn], self.players[0 if self.turn == 1 else 1],

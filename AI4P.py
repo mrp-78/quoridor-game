@@ -5,72 +5,72 @@ from Position import *
 import random
 
 class AI4P:
-                                # sourse is a string that can be r0 or r8 or c0 or c8
+    # sourse is a string that can be r0 or r8 or c0 or c8
     def __init__(self, logic: Logic2P, source):
-        self.logic = logic;
-        self.source = source;
+        self.logic = logic
+        self.source = source
                                     
     def chooseAnAction(self, players):
-        p1 = Player(Position(players[1].pos.row, players[1].pos.col));
-        p2 = Player(Position(players[2].pos.row, players[2].pos.col));
-        p3 = Player(Position(players[3].pos.row, players[3].pos.col));
-        p4 = Player(Position(players[4].pos.row, players[4].pos.col));
-        ps = [];
-        if (self.source == 'c0'):
-            ps = players[1:4] + players[0:1];
-        elif (self.source == 'r8'):
-            ps = players[2:4] + players[0:2];
-        elif (self.source == 'c8'):
-            ps = players[3:4] + players[0:3];
+        p1 = Player(Position(players[1].pos.row, players[1].pos.col))
+        p2 = Player(Position(players[2].pos.row, players[2].pos.col))
+        p3 = Player(Position(players[3].pos.row, players[3].pos.col))
+        p4 = Player(Position(players[4].pos.row, players[4].pos.col))
+        ps = []
+        if self.source == 'c0':
+            ps = players[1:4] + players[0:1]
+        elif self.source == 'r8':
+            ps = players[2:4] + players[0:2]
+        elif self.source == 'c8':
+            ps = players[3:4] + players[0:3]
         else:
-            ps = players;
+            ps = players
         alphaBeta = -1
         r = 0
         c = 0
         action = ""
         for pm in self.login.possibleMoves(p1, p2, p3, p4):
-            p = Player(Position(pm.row, pm.col));
-            a = self.minimaxTree(p, p2, p3, p4, 1, 0, 70);
+            p = Player(Position(pm.row, pm.col))
+            a = self.minimaxTree(p, p2, p3, p4, 1, 0, 70)
             if a > alphaBeta:
-                alphaBeta = a;
-                r = pm.row;
-                c = pm.col;
-                action = "move";
+                alphaBeta = a
+                r = pm.row
+                c = pm.col
+                action = "move"
         if players[0].walls > 0:
             for row in range(players[2].pos.row - 2, players[2].pos.row + 2):
                 for col in range(players[2].pos.col - 2, players[2].pos.col + 2):
                     if self.logic.addHwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != 'move'):
-                            alphaBeta = a;
-                            r = row;
-                            c = col;
-                            action = 'add Hwall';
-                        self.logic.hwalls[row][col] = False;
+                            alphaBeta = a
+                            r = row
+                            c = col
+                            action = 'add Hwall'
+                        self.logic.hwalls[row][col] = False
                     if self.logic.addVwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
-                            alphaBeta = a;
-                            r = row;
-                            c = col;
-                            action = "add Vwall";
-                        self.logic.vwalls[row][col] = False;
+                            alphaBeta = a
+                            r = row
+                            c = col
+                            action = "add Vwall"
+                        self.logic.vwalls[row][col] = False
             for row in range(players[3].pos.row - 2, players[3].pos.row + 2):
                 for col in range(players[3].pos.col - 2, players[3].pos.col + 2):
                     if self.logic.addHwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != 'move'):
-                            alphaBeta = a;
-                            r = row;
-                            c = col;
-                            action = 'add Hwall';
-                        self.logic.hwalls[row][col] = False;
+                            alphaBeta = a
+                            r = row
+                            c = col
+                            action = 'add Hwall'
+                        self.logic.hwalls[row][col] = False
                     if self.logic.addVwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
-                            alphaBeta = a;
-                            r = row;
-                            c = col;
+                            alphaBeta = a
+                            r = row
+                            c = col
                             action = "add Vwall";
                         self.logic.vwalls[row][col] = False;
             for row in range(players[1].pos.row - 2, players[1].pos.row + 2):
@@ -95,26 +95,26 @@ class AI4P:
 
     def isGoal(self, p: Player, s):
         if s == 'r0':
-            return (p.pos.row == 8 or p.pos.col == 0 or p.pos.col == 8);
+            return p.pos.row == 8 or p.pos.col == 0 or p.pos.col == 8;
         if s == 'c8':
-            return (p.pos.row == 8 or p.pos.col == 0 or p.pos.row == 0);
+            return p.pos.row == 8 or p.pos.col == 0 or p.pos.row == 0;
         if s == 'r8':
-            return (p.pos.row == 0 or p.pos.col == 0 or p.pos.col == 8);
+            return p.pos.row == 0 or p.pos.col == 0 or p.pos.col == 8;
         if s == 'c0':
-            return (p.pos.row == 8 or p.pos.row == 0 or p.pos.col == 8);
+            return p.pos.row == 8 or p.pos.row == 0 or p.pos.col == 8;
 
 
     def minimaxTree(self, player1: Player, player2: Player, player3: Player, player4: Player, d, l, r):
         if d == 4:
             return self.heuristic(player1, player2, player3, player4);
         sources = [];
-        if (self.source == 'r0'):
+        if self.source == 'r0':
             sources = ['r0', 'c8', 'r8', 'c0']
-        if (self.source == 'c8'):
+        if self.source == 'c8':
             sources = ['c8', 'r8', 'c0', 'r0']
-        if (self.source == 'r8'):
+        if self.source == 'r8':
             sources = ['r8', 'c0', 'r0', 'c8']
-        if (self.source == 'c0'):
+        if self.source == 'c0':
             sources = ['c0', 'r0', 'c8', 'r8']
         
         if self.isGoal(player1, sources[0]):
@@ -123,11 +123,11 @@ class AI4P:
             return 0;
 
         ps = [];
-        if (self.source == 'c0'):
+        if self.source == 'c0':
             ps = [player2, player3, player4, player1];
-        elif (self.source == 'r8'):
+        elif self.source == 'r8':
             ps = [player3, player4, player1, player2];
-        elif (self.source == 'c8'):
+        elif self.source == 'c8':
             ps = [player4, player1, player2, player3];
         else:
             ps = [player1, player2, player3, player4];

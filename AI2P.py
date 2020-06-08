@@ -43,11 +43,10 @@ class AI2P:
             if check and pm.row == self.prevRow and pm.col == self.prevCol:
                 continue
             p = Player(Position(pm.row, pm.col), None, None, p1.walls)
-            a = self.minimaxTree(p, p2, 1, 0, 70, self.depth)
+            a = self.minimaxTree(p, p2, 1, 0, 80, self.depth)
             if pm.row == sr and pm.col == sc:
                 a += 0.3
-            print(a, "move", pm.row, pm.col)
-            # self.printWalls()
+            # print(a, "move", pm.row, pm.col)
             if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5):
                 alphaBeta = a
                 r = pm.row
@@ -57,9 +56,8 @@ class AI2P:
             for row in range(player2.pos.row - 2, player2.pos.row + 2):
                 for col in range(player2.pos.col - 2, player2.pos.col + 2):
                     if self.logic.addHwall(col, row, p1, p2, self.goal):
-                        a = self.minimaxTree(p1, p2, 1, 0, 70, self.depth)
-                        print(a, "add Hwall", row, col)
-                        # self.printWalls()
+                        a = self.minimaxTree(p1, p2, 1, 0, 80, self.depth)
+                        # print(a, "add Hwall", row, col)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
                             alphaBeta = a
                             r = row
@@ -69,9 +67,8 @@ class AI2P:
                     if (row != 0 and row != 8) or (self.logic.isVwall(2 if row == 0 else 6, col)) \
                             or (self.logic.isHwall(row, col)) or (self.logic.isHwall(row, col + 1)):
                         if self.logic.addVwall(col, row, p1, p2, self.goal):
-                            a = self.minimaxTree(p1, p2, 1, 0, 70, self.depth)
-                            print(a, "add Vwall", row, col)
-                            # self.printWalls()
+                            a = self.minimaxTree(p1, p2, 1, 0, 80, self.depth)
+                            # print(a, "add Vwall", row, col)
                             if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
                                 alphaBeta = a
                                 r = row
@@ -92,13 +89,13 @@ class AI2P:
         if d == maxDepth:
             return self.heuristic(player1, player2)
         if player1.pos.row == self.goal:
-            return 70
+            return 80
         g = 0 if self.goal == 8 else 8
         if player2.pos.row == g:
             return 0
         if d % 2 == 1:
             # min
-            alphaBeta = 70
+            alphaBeta = 80
             for pm in self.logic.possibleMoves(player2, player1):
                 p = Player(Position(pm.row, pm.col), None, None, player2.walls)
                 a = self.minimaxTree(player1, p, d + 1, l, r, maxDepth)
@@ -164,7 +161,7 @@ class AI2P:
     def heuristic(self, player1: Player, player2: Player):
         # TODO add more factors
         if player1.pos.row == self.goal:
-            return 70
+            return 80
         g = 0 if self.goal == 8 else 8
         if player2.pos.row == g:
             return 0
@@ -214,15 +211,3 @@ class AI2P:
                     p3.pos.col = pm.col
                     q.append((p3, d + 1))
         return -1
-
-    def printWalls(self):
-        print("--hwalls")
-        for i in range(8):
-            for j in range(9):
-                print(self.logic.hwalls[i][j], end=" ")
-            print()
-        print("--vwalls")
-        for i in range(9):
-            for j in range(8):
-                print(self.logic.vwalls[i][j], end=" ")
-            print()
