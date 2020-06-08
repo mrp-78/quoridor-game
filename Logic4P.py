@@ -11,10 +11,18 @@ class Logic4P:
         self.vwalls = [[False for i in range(8)] for j in range(9)]
 
     def isHwall(self, r, c):
-        return (self.hwalls[r][c] or self.hwalls[r][c - 1])
+        if r >= 8 or c < 0 or c > 8 or r < 0:
+            return False
+        if c == 0:
+            return self.hwalls[r][c]
+        return self.hwalls[r][c] or self.hwalls[r][c - 1]
 
     def isVwall(self, r, c):
-        return (self.vwalls[r][c] or self.vwalls[r - 1][c])
+        if c >= 8 or r < 0 or r > 8 or c < 0:
+            return False
+        if r == 0:
+            return self.vwalls[r][c]
+        return self.vwalls[r][c] or self.vwalls[r - 1][c]
 
     def possibleMoves(self, player1, player2, player3, player4):
         pm = []
@@ -126,6 +134,8 @@ class Logic4P:
         return True
 
     def addHwall(self, c1, r1, players):
+        if r1 < 0 or r1 > 7 or c1 < 0 or c1 > 7:
+            return False
         player1, player2, player3, player4 = players
         if self.hwalls[r1][c1 - 1] or self.hwalls[r1][c1] or self.hwalls[r1][c1 + 1] or self.vwalls[r1][c1]:
             return False
@@ -139,6 +149,8 @@ class Logic4P:
         return True
 
     def addVwall(self, c1, r1, players):
+        if r1 < 0 or r1 > 7 or c1 < 0 or c1 > 7:
+            return False
         player1, player2, player3, player4 = players
         # print(player1.color)
         if self.vwalls[r1 - 1][c1] or self.vwalls[r1][c1] or self.vwalls[r1 + 1][c1] or self.hwalls[r1][c1]:

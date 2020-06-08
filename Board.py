@@ -3,6 +3,7 @@ import platform
 from Logic4P import *
 from roundRect import *
 from AI2P import *
+from AI4P import *
 
 colors = {"black": (0, 0, 0), "white": (234, 236, 238), "brawn": (102, 51, 0), "light-brawn": (255, 138, 101),
           "gray": (44, 62, 80), "light-gray": (128, 139, 150), "red": (255, 0, 0), "blue": (0, 0, 255),
@@ -27,6 +28,17 @@ class Board:
                 self.ai = [ai1, ai2]
         else:
             self.logic = Logic4P()
+            if self.numOfAi == 1:
+                self.ai = AI4P(self.logic, "r8")
+            elif self.numOfAi == 2:
+                ai1 = AI4P(self.logic, "c0")
+                ai2 = AI4P(self.logic, "c8")
+                self.ai = [ai1, ai2]
+            elif numOfAi == 3:
+                ai1 = AI4P(self.logic, "c0")
+                ai2 = AI4P(self.logic, "r8")
+                ai3 = AI4P(self.logic, "c8")
+                self.ai = [ai1, ai2, ai3]
         pygame.init()
         pygame.display.set_caption('Quoridor')
         pygame.font.init()
@@ -350,6 +362,52 @@ class Board:
             time.sleep(2)
         return True
 
+    def handleAI4PAction(self):
+        if self.numOfAi == 0 or (self.numOfAi == 1 and self.turn != 2) \
+                or (self.numOfAi == 2 and (self.turn == 2 or self.turn == 0)) \
+                or (self.numOfAi == 3 and self.turn == 0):
+            return False
+        if self.numOfAi == 1:
+            action, row, col = self.ai.chooseAnAction([self.players[2], self.players[3], self.players[0], self.players[1]])
+        elif self.numOfAi == 2:
+            action, row, col = self.ai[0 if self.turn == 1 else 1].chooseAnAction([self.players[self.turn]
+                    , self.players[(self.turn+1)%4], self.players[(self.turn+2)%4], self.players[(self.turn+3)%4]])
+        elif self.numOfAi == 3:
+            action, row, col = self.ai[self.turn-1].chooseAnAction([self.players[self.turn]
+                    , self.players[(self.turn + 1) % 4], self.players[(self.turn + 2) % 4], self.players[(self.turn + 3) % 4]])
+
+        # print(action, row, col)
+        if action == "move":
+            pygame.draw.rect(self.screen, colors["gray"],
+                             self.rect_position(self.players[self.turn].pos.row,
+                                                self.players[self.turn].pos.col))
+            self.deletePossibleMoves()
+            self.players[self.turn].obj = pygame.draw.circle(self.screen, self.players[self.turn].color,
+                                                             self.circle_position(row, col), 25)
+            self.players[self.turn].pos.row = row
+            self.players[self.turn].pos.col = col
+            if self.turn == 1 and (row == 0 or col == 0 or row == 8):
+                self.winner = 1
+                self.printWinner()
+            elif self.turn == 2 and (row == 0 or col == 0 or col == 8):
+                self.winner = 2
+                self.printWinner()
+            elif self.turn == 3 and (row == 0 or col == 8 or row == 8):
+                self.winner = 3
+                self.printWinner()
+        elif action == "add Vwall":
+            if self.logic.addVwall(col, row, self.players):
+                pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(col, row))
+                self.decreaseWalls(self.players[self.turn])
+        elif action == "add Hwall":
+            if self.logic.addHwall(col, row, self.players):
+                pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(col, row))
+                self.decreaseWalls(self.players[self.turn])
+        self.changeTurn()
+        # if tim < 2:
+        #     time.sleep(2)
+        return True
+
     def play(self):
         while True:
             for event in pygame.event.get():
@@ -362,8 +420,9 @@ class Board:
                     if pygame.mouse.get_pressed()[0]:
                         self.handleClick()
             else:
-                if pygame.mouse.get_pressed()[0]:
-                    self.handleClick()
+                if self.winner != -1 or not self.handleAI4PAction():
+                    if pygame.mouse.get_pressed()[0]:
+                        self.handleClick()
 
             pygame.display.update()
             pygame.event.pump()

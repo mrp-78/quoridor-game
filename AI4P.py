@@ -1,20 +1,20 @@
 from collections import deque
-from Logic2P import *
+from Logic4P import *
 from Player import *
 from Position import *
 import random
 
 class AI4P:
     # sourse is a string that can be r0 or r8 or c0 or c8
-    def __init__(self, logic: Logic2P, source):
+    def __init__(self, logic: Logic4P, source):
         self.logic = logic
         self.source = source
                                     
     def chooseAnAction(self, players):
-        p1 = Player(Position(players[1].pos.row, players[1].pos.col))
-        p2 = Player(Position(players[2].pos.row, players[2].pos.col))
-        p3 = Player(Position(players[3].pos.row, players[3].pos.col))
-        p4 = Player(Position(players[4].pos.row, players[4].pos.col))
+        p1 = Player(Position(players[0].pos.row, players[0].pos.col))
+        p2 = Player(Position(players[1].pos.row, players[1].pos.col))
+        p3 = Player(Position(players[2].pos.row, players[2].pos.col))
+        p4 = Player(Position(players[3].pos.row, players[3].pos.col))
         ps = []
         if self.source == 'c0':
             ps = players[1:4] + players[0:1]
@@ -28,9 +28,9 @@ class AI4P:
         r = 0
         c = 0
         action = ""
-        for pm in self.login.possibleMoves(p1, p2, p3, p4):
+        for pm in self.logic.possibleMoves(p1, p2, p3, p4):
             p = Player(Position(pm.row, pm.col))
-            a = self.minimaxTree(p, p2, p3, p4, 1, 0, 70)
+            a = self.minimaxTree(p, p2, p3, p4, 1, 0, 80)
             if a > alphaBeta:
                 alphaBeta = a
                 r = pm.row
@@ -40,7 +40,7 @@ class AI4P:
             for row in range(players[2].pos.row - 2, players[2].pos.row + 2):
                 for col in range(players[2].pos.col - 2, players[2].pos.col + 2):
                     if self.logic.addHwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != 'move'):
                             alphaBeta = a
                             r = row
@@ -48,7 +48,7 @@ class AI4P:
                             action = 'add Hwall'
                         self.logic.hwalls[row][col] = False
                     if self.logic.addVwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
                             alphaBeta = a
                             r = row
@@ -58,7 +58,7 @@ class AI4P:
             for row in range(players[3].pos.row - 2, players[3].pos.row + 2):
                 for col in range(players[3].pos.col - 2, players[3].pos.col + 2):
                     if self.logic.addHwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != 'move'):
                             alphaBeta = a
                             r = row
@@ -66,7 +66,7 @@ class AI4P:
                             action = 'add Hwall'
                         self.logic.hwalls[row][col] = False
                     if self.logic.addVwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70)
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80)
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
                             alphaBeta = a
                             r = row
@@ -76,7 +76,7 @@ class AI4P:
             for row in range(players[1].pos.row - 2, players[1].pos.row + 2):
                 for col in range(players[1].pos.col - 2, players[1].pos.col + 2):
                     if self.logic.addHwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80);
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != 'move'):
                             alphaBeta = a;
                             r = row;
@@ -84,7 +84,7 @@ class AI4P:
                             action = 'add Hwall';
                         self.logic.hwalls[row][col] = False;
                     if self.logic.addVwall(col, row, ps):
-                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 70);
+                        a = self.minimaxTree(p1, p2, p3, p4, 1, 0, 80);
                         if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5 and action != "move"):
                             alphaBeta = a;
                             r = row;
@@ -115,11 +115,11 @@ class AI4P:
         if self.source == 'c0':
             sources = ['c0', 'r0', 'c8', 'r8']
         
-        if d == 4:
+        if d == 3:
             return self.heuristic(player1, player2, player3, player4, sources);
 
         if self.isGoal(player1, sources[0]):
-            return 70;
+            return 80;
         elif self.isGoal(player2, sources[1]) or self.isGoal(player3, sources[2]) or self.isGoal(player4, sources[3]):
             return 0;
 
@@ -136,7 +136,7 @@ class AI4P:
         if d % 4 == 0:
             #max
             alphaBeta = 0;
-            for pm in self.login.possibleMoves(player1, player2, player3, player4):
+            for pm in self.logic.possibleMoves(player1, player2, player3, player4):
                 p = Player(Position(pm.row, pm.col));
                 a = self.minimaxTree(p, player2, player3, player4, d+1, l, r);
                 alphaBeta = max(alphaBeta, a);
@@ -202,8 +202,8 @@ class AI4P:
 
         elif d % 4 == 1:
         #min
-            alphaBeta = 70;
-            for pm in self.login.possibleMoves(player2, player1, player3, player4):
+            alphaBeta = 80;
+            for pm in self.logic.possibleMoves(player2, player1, player3, player4):
                 p = Player(Position(pm.row, pm.col));
                 a = self.minimaxTree(player1, p, player3, player4, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
@@ -233,8 +233,8 @@ class AI4P:
 
         elif d % 4 == 2:
             #min
-            alphaBeta = 70;
-            for pm in self.login.possibleMoves(player3, player1, player2, player4):
+            alphaBeta = 80;
+            for pm in self.logic.possibleMoves(player3, player1, player2, player4):
                 p = Player(Position(pm.row, pm.col));
                 a = self.minimaxTree(player1, player2, p, player4, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
@@ -264,8 +264,8 @@ class AI4P:
 
         elif d % 4 == 3:
             #min
-            alphaBeta = 70;
-            for pm in self.login.possibleMoves(player4, player1, player3, player2):
+            alphaBeta = 80;
+            for pm in self.logic.possibleMoves(player4, player1, player3, player2):
                 p = Player(Position(pm.row, pm.col));
                 a = self.minimaxTree(player1, player2, player3, p, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
@@ -295,7 +295,7 @@ class AI4P:
 
     def heuristic(self, player1: Player, player2: Player, player3: Player, player4: Player, sources):
         if self.isGoal(player1, sources[0]):
-            return 70;
+            return 80;
         if self.isGoal(player2, sources[1]) or self.isGoal(player3, sources[2]) or self.isGoal(player4, sources[3]):
             return 0;
         return (0.75 * (min(self.shortestPath(player2, player1, player3, player4), self.shortestPath(player3, player1, player2, player4), self.shortestPath(player4, player1, player3, player2)) - self.shortestPath(player1, player2, player3, player4)) + 0.15 * (player1.walls - max(player2.walls, player3.walls, player4.walls)) + 0.05 * (((self.countNearWalls(player2, player1, player3, player4) + self.countNearWalls(player3, player2, player1, player4) + self.countNearWalls(player4, player2, player3, player1)) / 3) - self.countNearWalls(player1, player2, player3, player4)) + 0.05 * (len(self.logic.possibleMoves(player1, player2, player3, player4)) - ((len(self.logic.possibleMoves(player2, player1, player3, player4)) + len(self.logic.possibleMoves(player3, player2, player1, player4)) + len(self.logic.possibleMoves(player4, player2, player3, player1))) / 3))) + 35;
