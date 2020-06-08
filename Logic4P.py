@@ -1,5 +1,5 @@
-from position import *
-from player import *
+from Position import *
+from Player import *
 
 
 class Main4:

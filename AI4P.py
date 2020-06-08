@@ -1,7 +1,7 @@
 from collections import deque
-from Quoridor2P import *
-from player import *
-from position import *
+from Logic2P import *
+from Player import *
+from Position import *
 import random
 
 class AI4P:

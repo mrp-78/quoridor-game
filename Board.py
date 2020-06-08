@@ -1,12 +1,8 @@
 import pygame
-# import random
 import platform
 import time
-from Quoridor2P import *
-from Quoridor4P import *
+from Logic4P import *
 from roundRect import *
-from position import *
-from player import *
 from AI2P import *
 
 colors = {"black": (0, 0, 0), "white": (234, 236, 238), "brawn": (102, 51, 0), "light-brawn": (255, 138, 101),
