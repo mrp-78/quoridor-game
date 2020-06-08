@@ -2,7 +2,7 @@ from Position import *
 from Player import *
 
 
-class Main:
+class Logic2P:
 
     def __init__(self):
         # horizontal walls

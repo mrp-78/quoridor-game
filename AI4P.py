@@ -6,7 +6,7 @@ import random
 
 class AI4P:
                                 # sourse is a string that can be r0 or r8 or c0 or c8
-    def __init__(self, logic: Main, source):
+    def __init__(self, logic: Logic2P, source):
         self.logic = logic;
         self.source = source;
                                     

@@ -1,4 +1,5 @@
 import random
+import time
 from collections import deque
 from Logic2P import *
 from Player import *
@@ -6,7 +7,7 @@ from Position import *
 
 
 class AI2P:
-    def __init__(self, logic: Main, goal: int):
+    def __init__(self, logic: Logic2P, goal: int):
         self.logic = logic
         self.goal = goal
         self.prevRow = -1
@@ -15,6 +16,7 @@ class AI2P:
         self.depth = 3
 
     def chooseAnAction(self, player1: Player, player2: Player):
+        start = time.process_time()
         if player1.walls + player2.walls == self.targetForChangeDepth:
             self.depth += 1
             self.targetForChangeDepth -= 5
@@ -82,7 +84,8 @@ class AI2P:
         else :
             self.prevRow = -1
             self.prevCol = -1
-        return action, r, c
+        t = time.process_time() - start
+        return action, r, c, t
 
     def minimaxTree(self, player1: Player, player2: Player, d, l, r, maxDepth):
         # TODO find the best depth for algorithm

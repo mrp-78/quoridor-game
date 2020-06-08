@@ -1,6 +1,5 @@
 import pygame
 import platform
-import time
 from Logic4P import *
 from roundRect import *
 from AI2P import *
@@ -18,10 +17,16 @@ class Board:
         self.turn = random.randint(0, numOfPlayer)
         self.possibleMove = []
         if numOfPlayer == 2:
-            self.logic = Main()
-            self.ai = AI2P(self.logic, 0)
+            self.logic = Logic2P()
+            self.numOfAi = int(input("Please enter number of bots (0 or 1 or 2): "))
+            if self.numOfAi == 1:
+                self.ai = AI2P(self.logic, 0)
+            elif self.numOfAi == 2:
+                ai1 = AI2P(self.logic, 8)
+                ai2 = AI2P(self.logic, 0)
+                self.ai = [ai1, ai2]
         else:
-            self.logic = Main4()
+            self.logic = Logic4P()
         pygame.init()
         pygame.display.set_caption('Quoridor')
         pygame.font.init()
@@ -246,10 +251,6 @@ class Board:
         round_rect(self.screen, self.players[self.turn].color, (0, 0, 75, 35))
         textsurface = self.myfont.render('turn', False, colors["black"])
         self.screen.blit(textsurface, (5 + self.diff, -10 + 1.5 * self.diff))
-        if self.turn == 1:
-            start = time.process_time()
-            print(self.ai.chooseAnAction(self.players[1], self.players[0]))
-            print(time.process_time() - start)
 
     def decreaseWalls(self, player):
         player.walls -= 1
@@ -311,17 +312,56 @@ class Board:
             p.obj = pygame.draw.rect(self.screen, colors["gray"], (self.rect_position(p.row, p.col)))
         self.possibleMove = []
 
+    def handleAI2PAction(self):
+        if self.numOfAi == 0 or (self.numOfAi == 1 and self.turn == 0):
+            return False
+        if self.numOfAi == 1:
+            action, row, col, tim = self.ai.chooseAnAction(self.players[self.turn], self.players[0 if self.turn == 1 else 1])
+        elif self.numOfAi == 2:
+            action, row, col, tim = self.ai[self.turn].chooseAnAction(self.players[self.turn], self.players[0 if self.turn == 1 else 1])
+        print(action, row, col)
+        if action == "move":
+            pygame.draw.rect(self.screen, colors["gray"],
+                             self.rect_position(self.players[self.turn].pos.row,
+                                                self.players[self.turn].pos.col))
+            self.deletePossibleMoves()
+            self.players[self.turn].obj = pygame.draw.circle(self.screen, self.players[self.turn].color,
+                                                             self.circle_position(row, col), 25)
+            self.players[self.turn].pos.row = row
+            self.players[self.turn].pos.col = col
+            if self.turn == 1 and row == 0:
+                self.winner = 1
+                self.printWinner()
+        elif action == "add Vwall":
+            if self.logic.addVwall(col, row, self.players[self.turn], self.players[0 if self.turn == 1 else 1],
+                    8 if self.turn == 0 else 0):
+                pygame.draw.rect(self.screen, colors["light-brawn"], self.vwall_position(col, row))
+                self.decreaseWalls(self.players[self.turn])
+        elif action == "add Hwall":
+            if self.logic.addHwall(col, row, self.players[self.turn], self.players[0 if self.turn == 1 else 1],
+                    8 if self.turn == 0 else 0):
+                pygame.draw.rect(self.screen, colors["light-brawn"], self.hwall_position(col, row))
+                self.decreaseWalls(self.players[self.turn])
+        self.changeTurn()
+        if tim < 2:
+            time.sleep(2)
+        return True
+
     def play(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-            if pygame.mouse.get_pressed()[0]:
-                # print(self.ai.shortestPath(self.players[0], self.players[1]))
-                # print(self.ai.countNearWalls(self.players[0], self.players[1]))
 
-                self.handleClick()
+            if self.numOfPlayer == 2:
+                if self.winner != -1 or not self.handleAI2PAction():
+                    if pygame.mouse.get_pressed()[0]:
+                        self.handleClick()
+            else:
+                if pygame.mouse.get_pressed()[0]:
+                    self.handleClick()
+
             pygame.display.update()
             pygame.event.pump()
             self.clock.tick(60)
