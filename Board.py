@@ -31,13 +31,13 @@ class Board:
             if self.numOfAi == 1:
                 self.ai = AI4P(self.logic, "r8")
             elif self.numOfAi == 2:
-                ai1 = AI4P(self.logic, "c0")
-                ai2 = AI4P(self.logic, "c8")
+                ai1 = AI4P(self.logic, "c8")
+                ai2 = AI4P(self.logic, "c0")
                 self.ai = [ai1, ai2]
             elif numOfAi == 3:
-                ai1 = AI4P(self.logic, "c0")
+                ai1 = AI4P(self.logic, "c8")
                 ai2 = AI4P(self.logic, "r8")
-                ai3 = AI4P(self.logic, "c8")
+                ai3 = AI4P(self.logic, "c0")
                 self.ai = [ai1, ai2, ai3]
         pygame.init()
         pygame.display.set_caption('Quoridor')
