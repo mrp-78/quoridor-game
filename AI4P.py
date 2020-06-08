@@ -11,10 +11,10 @@ class AI4P:
         self.source = source
                                     
     def chooseAnAction(self, players):
-        p1 = Player(Position(players[0].pos.row, players[0].pos.col))
-        p2 = Player(Position(players[1].pos.row, players[1].pos.col))
-        p3 = Player(Position(players[2].pos.row, players[2].pos.col))
-        p4 = Player(Position(players[3].pos.row, players[3].pos.col))
+        p1 = Player(Position(players[0].pos.row, players[0].pos.col), None, None, players[0].walls)
+        p2 = Player(Position(players[1].pos.row, players[1].pos.col), None, None, players[1].walls)
+        p3 = Player(Position(players[2].pos.row, players[2].pos.col), None, None, players[2].walls)
+        p4 = Player(Position(players[3].pos.row, players[3].pos.col), None, None, players[3].walls)
         ps = []
         if self.source == 'c0':
             ps = players[1:4] + players[0:1]
@@ -28,9 +28,27 @@ class AI4P:
         r = 0
         c = 0
         action = ""
-        for pm in self.logic.possibleMoves(p1, p2, p3, p4):
-            p = Player(Position(pm.row, pm.col))
+
+        sp = -1;
+        sr = 0;
+        sc = 0;
+        pmList = self.logic.possibleMoves(p1, p2, p3, p4);
+        for pm in pmList:
+            p = Player(Position(pm.row, pm.col), None, None, p1.walls);
+            l = self.shortestPath(p, p2, p3, p4);
+            if sp == -1 or l < sp:
+                sp = l;
+                sr = pm.row;
+                sc = pm.col;
+        
+
+        for pm in pmList:
+            p = Player(Position(pm.row, pm.col, None, None, p1.walls))
             a = self.minimaxTree(p, p2, p3, p4, 1, 0, 80)
+
+            if pm.row == sr and pm.col == sc:
+                a += 0.3;
+
             if a > alphaBeta:
                 alphaBeta = a
                 r = pm.row
@@ -137,7 +155,7 @@ class AI4P:
             #max
             alphaBeta = 0;
             for pm in self.logic.possibleMoves(player1, player2, player3, player4):
-                p = Player(Position(pm.row, pm.col));
+                p = Player(Position(pm.row, pm.col), None, None, player1.walls);
                 a = self.minimaxTree(p, player2, player3, player4, d+1, l, r);
                 alphaBeta = max(alphaBeta, a);
                 if a >= r:
@@ -204,7 +222,7 @@ class AI4P:
         #min
             alphaBeta = 80;
             for pm in self.logic.possibleMoves(player2, player1, player3, player4):
-                p = Player(Position(pm.row, pm.col));
+                p = Player(Position(pm.row, pm.col), None, None, player2.walls);
                 a = self.minimaxTree(player1, p, player3, player4, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
                 if a <= l:
@@ -235,7 +253,7 @@ class AI4P:
             #min
             alphaBeta = 80;
             for pm in self.logic.possibleMoves(player3, player1, player2, player4):
-                p = Player(Position(pm.row, pm.col));
+                p = Player(Position(pm.row, pm.col), None, None, player3.walls);
                 a = self.minimaxTree(player1, player2, p, player4, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
                 if a <= l:
@@ -266,7 +284,7 @@ class AI4P:
             #min
             alphaBeta = 80;
             for pm in self.logic.possibleMoves(player4, player1, player3, player2):
-                p = Player(Position(pm.row, pm.col));
+                p = Player(Position(pm.row, pm.col), None, None, player4.walls);
                 a = self.minimaxTree(player1, player2, player3, p, d+1, l, r);
                 alphaBeta = min(alphaBeta, a);
                 if a <= l:
@@ -323,7 +341,7 @@ class AI4P:
     
     def shortestPath(self, player1: Player, player2: Player, player3: Player, player4: Player):
         mark = [[False for i in range(9)] for j in range(9)];
-        p1 = Player(Position(player1.pos.row, player1.pos.col));
+        p1 = Player(Position(player1.pos.row, player1.pos.col), None, None, player1.walls);
         q = deque();
         q.append((p1, 0));
         mark[p1.pos.row][p1.pos.col] = True;
@@ -335,7 +353,7 @@ class AI4P:
             for pm in self.logic.possibleMoves(p, player2, player3, player4):
                 if not mark[pm.row][pm.col]:
                     mark[pm.row][pm.col] = True;
-                    p5 = Player(Position(pm.row, pm.col));
+                    p5 = Player(Position(pm.row, pm.col), None, None, player1.walls);
                     q.append((p5, d + 1));
 
         return -1;
