@@ -43,7 +43,7 @@ class AI4P:
         
 
         for pm in pmList:
-            p = Player(Position(pm.row, pm.col, None, None, p1.walls))
+            p = Player(Position(pm.row, pm.col), None, None, p1.walls)
             a = self.minimaxTree(p, p2, p3, p4, 1, 0, 80)
 
             if pm.row == sr and pm.col == sc:
