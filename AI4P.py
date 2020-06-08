@@ -105,8 +105,6 @@ class AI4P:
 
 
     def minimaxTree(self, player1: Player, player2: Player, player3: Player, player4: Player, d, l, r):
-        if d == 4:
-            return self.heuristic(player1, player2, player3, player4);
         sources = [];
         if self.source == 'r0':
             sources = ['r0', 'c8', 'r8', 'c0']
@@ -117,6 +115,9 @@ class AI4P:
         if self.source == 'c0':
             sources = ['c0', 'r0', 'c8', 'r8']
         
+        if d == 4:
+            return self.heuristic(player1, player2, player3, player4, sources);
+
         if self.isGoal(player1, sources[0]):
             return 70;
         elif self.isGoal(player2, sources[1]) or self.isGoal(player3, sources[2]) or self.isGoal(player4, sources[3]):
@@ -291,3 +292,50 @@ class AI4P:
                             r = min(r, a);
                             self.logic.vwalls[row][col] = False;      
             return alphaBeta;
+
+    def heuristic(self, player1: Player, player2: Player, player3: Player, player4: Player, sources):
+        if self.isGoal(player1, sources[0]):
+            return 70;
+        if self.isGoal(player2, sources[1]) or self.isGoal(player3, sources[2]) or self.isGoal(player4, sources[3]):
+            return 0;
+        return (0.75 * (max(self.shortestPath(player2, player1, player3, player4), self.shortestPath(player3, player1, player2, player4), self.shortestPath(player4, player1, player3, player2)) - self.shortestPath(player1, player2, player3, player4)) + 0.15 * (player1.walls - max(player2.walls, player3.walls, player4.walls)) + 0.05 * (((self.countNearWalls(player2, player1, player3, player4) + self.countNearWalls(player3, player2, player1, player4) + self.countNearWalls(player4, player2, player3, player1)) / 3) - self.countNearWalls(player1, player2, player3, player4)) + 0.05 * (len(self.logic.possibleMoves(player1, player2, player3, player4)) - ((len(self.logic.possibleMoves(player2, player1, player3, player4)) + len(self.logic.possibleMoves(player3, player2, player1, player4)) + len(self.logic.possibleMoves(player4, player2, player3, player1))) / 3))) + 35;
+
+    def countNearWalls(self, player1: Player, player2: Player, player3: Player, player4: Player):
+        w = 0;
+        if self.logic.isHwall(player1.pos.row, player1.pos.col):
+            w += 1
+        if self.logic.isHwall(player1.pos.row - 1, player1.pos.col):
+            w += 1
+        if self.logic.isVwall(player1.pos.row, player1.pos.col):
+            w += 1
+        if self.logic.isVwall(player1.pos.row, player1.pos.col - 1):
+            w += 1
+        for pm in self.logic.possibleMoves(player1, player2, player3, player4):
+            if self.logic.isHwall(pm.row, pm.col):
+                w += 1
+            if self.logic.isHwall(pm.row - 1, pm.col):
+                w += 1
+            if self.logic.isVwall(pm.row, pm.col):
+                w += 1
+            if self.logic.isVwall(pm.row, pm.col - 1):
+                w += 1
+        return w
+    
+    def shortestPath(self, player1: Player, player2: Player, player3: Player, player4: Player):
+        mark = [[False for i in range(9)] for j in range(9)];
+        p1 = Player(Position(player1.pos.row, player1.pos.col));
+        q = deque();
+        q.append((p1, 0));
+        mark[p1.pos.row][p1.pos.col] = True;
+
+        while q:
+            p, d = q.popleft();
+            if self.isGoal(p, self.source):
+                return d;
+            for pm in self.logic.possibleMoves(p, player2, player3, player4):
+                if not mark[pm.row][pm.col]:
+                    mark[pm.row][pm.col] = True;
+                    p5 = Player(Position(pm.row, pm.col));
+                    q.append((p5, d + 1));
+
+        return -1;
