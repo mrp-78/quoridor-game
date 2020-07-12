@@ -7,9 +7,11 @@ from Position import *
 
 
 class AI2P:
-    def __init__(self, logic: Logic2P, goal: int):
+    def __init__(self, logic: Logic2P, goal: int, heuristicFactors=[0.75, 0.15, 0.05, 0.05]):
         self.logic = logic
         self.goal = goal
+        self.heuristicFactors = heuristicFactors
+        self.maxOfHeuristic = 45*heuristicFactors[0] + 10*heuristicFactors[1] + 20*heuristicFactors[2] + 5*heuristicFactors[3]
         self.prevRow = -1
         self.prevCol = -1
         self.targetForChangeDepth = 15
@@ -44,8 +46,8 @@ class AI2P:
                 continue
             p = Player(Position(pm.row, pm.col), None, None, p1.walls)
             a = self.minimaxTree(p, p2, 1, 0, 80, self.depth)
-            if pm.row == sr and pm.col == sc:
-                a += 0.3
+            # if pm.row == sr and pm.col == sc:
+            #     a += 0.3
             # print(a, "move", pm.row, pm.col)
             if a > alphaBeta or (a == alphaBeta and random.randint(0, 10) < 5):
                 alphaBeta = a
@@ -78,7 +80,7 @@ class AI2P:
         if action == "move":
             self.prevRow = player1.pos.row
             self.prevCol = player1.pos.col
-        else :
+        else:
             self.prevRow = -1
             self.prevCol = -1
         t = time.process_time() - start
@@ -165,11 +167,13 @@ class AI2P:
         g = 0 if self.goal == 8 else 8
         if player2.pos.row == g:
             return 0
-        return (0.75 * (self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
-                        - self.shortestPath(player1, player2, self.goal)) + 0.15 * (player1.walls - player2.walls)
-                + 0.05 * (self.countNearWalls(player2, player1) - self.countNearWalls(player1, player2))
-                + 0.05 * (len(self.logic.possibleMoves(player1, player2)) - len(self.logic.possibleMoves(player1, player2)))
-                ) + 35
+        return (self.heuristicFactors[0] * (self.shortestPath(player2, player1, 0 if self.goal == 8 else 8)
+                        - self.shortestPath(player1, player2, self.goal))
+                + self.heuristicFactors[1] * (player1.walls - player2.walls)
+                + self.heuristicFactors[2] * (self.countNearWalls(player2, player1) - self.countNearWalls(player1, player2))
+                + self.heuristicFactors[3] * (len(self.logic.possibleMoves(player1, player2))
+                        - len(self.logic.possibleMoves(player2, player1)))
+                + self.maxOfHeuristic) / (2 * self.maxOfHeuristic)
 
     def countNearWalls(self, player1: Player, player2: Player):
         w = 0
