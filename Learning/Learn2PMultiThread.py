@@ -31,7 +31,7 @@ def createEarlyPopulation():
 
 
 def main():
-    for i in range(20):
+    for i in range(5):
         print(50 * "-")
         print("Round", i + 1, " of evolution")
         winners = []
@@ -198,6 +198,59 @@ def childProduction(winners):
     return childes
 
 
+def chooseBestFactor():
+    with open('population.txt', 'r') as file:
+        population = json.load(file)
+    random.shuffle(population)
+    winners = []
+    j = 0
+    que = queue.Queue()
+    threads_list = list()
+    start_time = datetime.now()
+    while j < 20:
+        print("#Thread", int(j / 4 + 1), "finding winners of group", int(j / 4 + 1), "...")
+        t = threading.Thread(target=lambda q, arg1, arg2: q.put(finedWinners(arg1, arg2)),
+                             args=(que, population[j:j + 4], int(j / 4 + 1)))
+        t.start()
+        threads_list.append(t)
+        j += 4
+    for t in threads_list:
+        t.join()
+
+    while not que.empty():
+        result = que.get()
+        winners.append(result[0])
+    print("finding winner of last group ...")
+    scores = [0 for i in range(len(winners))]
+    for i in range(len(winners)):
+        for j in range(i+1, len(winners)):
+            logic = Logic2P()
+            ai1 = AI2P(logic, 8, population[i])
+            ai2 = AI2P(logic, 0, population[j])
+            t = threading.Thread(
+                target=lambda q, arg1, arg2, arg3, arg4, arg5: q.put(playGame(arg1, arg2, arg3, arg4, arg5)),
+                args=(que, ai1, ai2, i, j, logic))
+            t.start()
+            threads_list.append(t)
+    for t in threads_list:
+        t.join()
+    while not que.empty():
+        result = que.get()
+        i, j, winner, actions = result
+        if winner == 0:
+            scores[i] += 1
+        elif winner == 1:
+            scores[j] += 1
+    m = max(scores)
+    mindx = [i for i, j in enumerate(scores) if j == m]
+    print("best factors:", winners[mindx])
+    end_time = datetime.now()
+    print('[Duration: {}]'.format(end_time - start_time))
+    with open('final-factors.txt', 'w') as file:
+        json.dump(winners[mindx], file)
+
+
 if __name__ == '__main__':
     # createEarlyPopulation()
     main()
+    chooseBestFactor()
