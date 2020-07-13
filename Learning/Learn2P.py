@@ -1,5 +1,6 @@
 import random
 import json
+from datetime import datetime
 
 from AI2P import AI2P
 from Logic2P import Logic2P
@@ -34,11 +35,14 @@ def main():
             population = json.load(file)
         random.shuffle(population)
         j = 0
-        while j < 20:
+        while j < 40:
             print("finding winners of group", int(j/4+1), "...")
+            start_time = datetime.now()
             for winner in finedWinners(population[j:j + 4]):
                 winners.append(winner)
             j += 4
+            end_time = datetime.now()
+            print('[Duration: {}]'.format(end_time - start_time))
         winners = winners + childProduction(winners)
         print(winners)
         with open('population.txt', 'w') as file:
