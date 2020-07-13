@@ -31,7 +31,7 @@ def createEarlyPopulation():
 
 
 def main():
-    for i in range(1):
+    for i in range(20):
         print(50 * "-")
         print("Round", i + 1, " of evolution")
         winners = []
@@ -57,7 +57,6 @@ def main():
             winners = winners + result
         end_time = datetime.now()
         print('[Duration: {}]'.format(end_time - start_time))
-        print(winners)
         with open('population.txt', 'w') as file:
             json.dump(winners, file)
         with open('evolution-history.txt', 'a') as file:
@@ -76,7 +75,7 @@ def finedWinners(population, threadNumber):
         ai1 = AI2P(logic, 8, population[0])
         ai2 = AI2P(logic, 0, population[1+i])
         t = threading.Thread(target=lambda q, arg1, arg2, arg3, arg4, arg5: q.put(playGame(arg1, arg2, arg3, arg4, arg5)),
-                args=(que, ai1, ai2, 1, 1+i, logic))
+                args=(que, ai1, ai2, 0, 1+i, logic))
         t.start()
         threads_list.append(t)
         if i == 0:
@@ -102,13 +101,13 @@ def finedWinners(population, threadNumber):
             numOfActions[j] += actions
             if winner == 0:
                 scores[i] += 1
-            else:
+            elif winner == 1:
                 scores[j] += 1
 
     # print score board
     print("\tThread", threadNumber, "players score")
     for i in range(4):
-        print("\t", i+1, 4*" ", scores[i])
+        print("\t\t", i+1, 4*" ", scores[i])
     m = max(scores)
     winners = [i for i, j in enumerate(scores) if j == m]
     if len(winners) == 1:
@@ -134,6 +133,8 @@ def finedWinners(population, threadNumber):
             return [population[winners[0]], population[winners[2]]]
         else:
             return [population[winners[0]], population[winners[1]]]
+    else:
+        return winners[0:2]
 
 
 def playGame(ai1, ai2, i, j, logic):
@@ -143,6 +144,9 @@ def playGame(ai1, ai2, i, j, logic):
     player2 = Player(Position(8, 4))
     players = [player1, player2]
     while True:
+        if numOfActions > 500:
+            winner = -1
+            break
         if turn == 0:
             action, row, col, tim = ai1.chooseAnAction(players[0], players[1])
         else:
@@ -195,5 +199,5 @@ def childProduction(winners):
 
 
 if __name__ == '__main__':
-    createEarlyPopulation()
+    # createEarlyPopulation()
     main()
