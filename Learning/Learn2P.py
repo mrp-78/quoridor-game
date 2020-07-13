@@ -1,6 +1,8 @@
 import random
 import json
 from datetime import datetime
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from AI2P import AI2P
 from Logic2P import Logic2P
