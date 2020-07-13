@@ -10,7 +10,7 @@ from Position import Position
 def createEarlyPopulation():
     print("generating early population ...")
     earlyPopulation = []
-    for i in range(20):
+    for i in range(40):
         p = []
         for j in range(4):
             a = random.random()
@@ -20,10 +20,13 @@ def createEarlyPopulation():
         earlyPopulation.append(p)
     with open('population.txt', 'w') as file:
         json.dump(earlyPopulation, file)
+    with open('evolution-history.txt', 'a') as file:
+        json.dump(earlyPopulation, file)
+        file.write("\n")
 
 
 def main():
-    for i in range(1):
+    for i in range(100):
         print(50 * "-")
         print("Round", i + 1, " of evolution")
         winners = []
@@ -40,14 +43,18 @@ def main():
         print(winners)
         with open('population.txt', 'w') as file:
             json.dump(winners, file)
+        with open('evolution-history.txt', 'a') as file:
+            json.dump(winners, file)
+            file.write("\n")
 
 
 def finedWinners(population):
     scores = [0, 0, 0, 0]
+    numOfActions = [0, 0, 0, 0]
     for i in range(4):
         for j in range(i+1, 4):
             logic = Logic2P()
-            turn = 0
+            turn = random.choice([0, 1])
             player1 = Player(Position(0, 4))
             player2 = Player(Position(8, 4))
             players = [player1, player2]
@@ -58,6 +65,8 @@ def finedWinners(population):
                     action, row, col, tim = ai1.chooseAnAction(players[0], players[1])
                 else:
                     action, row, col, tim = ai2.chooseAnAction(players[1], players[0])
+                numOfActions[i] += 1
+                numOfActions[j] += 1
                 if action == "move":
                     players[turn].pos.row = row
                     players[turn].pos.col = col
@@ -74,6 +83,10 @@ def finedWinners(population):
                     if logic.addHwall(col, row, players[turn], players[0 if turn == 1 else 1],
                                            8 if turn == 0 else 0):
                         players[turn].walls -= 1
+                if turn == 0:
+                    turn = 1
+                else:
+                    turn = 0
             if winner == 0:
                 scores[i] += 1
             else:
@@ -83,7 +96,31 @@ def finedWinners(population):
     print("\tplayer score")
     for i in range(4):
         print("\t", i+1, 4*" ", scores[i])
-    return population[0], population[1]
+    m = max(scores)
+    winners = [i for i, j in enumerate(scores) if j == m]
+    if len(winners) == 1:
+        rs = [population[winners[0]]]
+        m2 = 0
+        mindx = 0
+        for i in range(4):
+            if scores[i] > m2 and scores[i] != m:
+                m2 = scores[i]
+                mindx = i
+            elif scores[i] == m2:
+                if numOfActions[i] <= numOfActions[mindx]:
+                    m2 = scores[i]
+                    mindx = i
+        rs.append(population[mindx])
+        return rs
+    elif len(winners) == 2:
+        return [population[winners[0]], population[winners[1]]]
+    elif len(winners) == 3:
+        if numOfActions[winners[0]] >= numOfActions[winners[1]] and numOfActions[winners[0]] >= numOfActions[winners[2]]:
+            return [population[winners[1]], population[winners[2]]]
+        elif numOfActions[winners[1]] >= numOfActions[winners[0]] and numOfActions[winners[1]] >= numOfActions[winners[2]]:
+            return [population[winners[0]], population[winners[2]]]
+        else:
+            return [population[winners[0]], population[winners[1]]]
 
 
 def childProduction(winners):
