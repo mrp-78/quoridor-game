@@ -243,14 +243,14 @@ def chooseBestFactor():
             scores[j] += 1
     m = max(scores)
     mindx = [i for i, j in enumerate(scores) if j == m]
-    print("best factors:", winners[mindx])
+    print("best factors:", winners[mindx[0]])
     end_time = datetime.now()
     print('[Duration: {}]'.format(end_time - start_time))
     with open('final-factors.txt', 'w') as file:
-        json.dump(winners[mindx], file)
+        json.dump(winners[mindx[0]], file)
 
 
 if __name__ == '__main__':
     # createEarlyPopulation()
-    main()
+    # main()
     chooseBestFactor()
