@@ -3,11 +3,10 @@ import json
 from datetime import datetime
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from AI2P import AI2P
-from Logic2P import Logic2P
-from Player import Player
-from Position import Position
+from AI.AI2P import AI2P
+from Logic.Logic2P import Logic2P
+from Graphic.Player import Player
+from Graphic.Position import Position
 
 
 def createEarlyPopulation():

@@ -1,9 +1,9 @@
 import random
 import time
 from collections import deque
-from Logic2P import *
-from Player import *
-from Position import *
+from Logic.Logic2P import *
+from Graphic.Player import *
+from Graphic.Position import *
 
 
 class AI2P:

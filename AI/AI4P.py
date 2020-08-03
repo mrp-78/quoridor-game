@@ -1,7 +1,7 @@
 from collections import deque
-from Logic4P import *
-from Player import *
-from Position import *
+from Logic.Logic4P import *
+from Graphic.Player import *
+from Graphic.Position import *
 import random
 
 class AI4P:

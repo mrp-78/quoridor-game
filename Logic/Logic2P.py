@@ -1,5 +1,5 @@
-from Position import *
-from Player import *
+from Graphic.Position import *
+from Graphic.Player import *
 
 
 class Logic2P:

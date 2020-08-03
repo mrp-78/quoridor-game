@@ -1,9 +1,9 @@
 import pygame
 import platform
-from Logic4P import *
-from roundRect import *
-from AI2P import *
-from AI4P import *
+from Logic.Logic4P import *
+from Graphic.roundRect import *
+from AI.AI2P import *
+from AI.AI4P import *
 
 colors = {"black": (0, 0, 0), "white": (234, 236, 238), "brawn": (102, 51, 0), "light-brawn": (255, 138, 101),
           "gray": (44, 62, 80), "light-gray": (128, 139, 150), "red": (255, 0, 0), "blue": (0, 0, 255),
@@ -45,7 +45,7 @@ class Board:
         self.myfont = pygame.font.SysFont('Comic Sans MS', 30)
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((850, 790))
-        bg = pygame.image.load("bg.jpg").convert()
+        bg = pygame.image.load("Graphic/bg.jpg").convert()
         bg = pygame.transform.scale(bg, (850, 790))
         self.screen.blit(bg, (0, 0))
         self.diff = 0

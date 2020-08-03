@@ -1,4 +1,4 @@
-from Board import *
+from Graphic.Board import *
 
 numOfPlayers = int(input("Please enter number of players (2 or 4): "))
 if numOfPlayers == 2:
